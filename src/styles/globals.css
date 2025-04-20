@@ -13,6 +13,72 @@
   color-scheme: dark;
 }
 
+/* Fix for header sizes */
+h1 {
+  font-size: 3.5rem !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+}
+
+h2 {
+  font-size: 2.75rem !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+}
+
+h3 {
+  font-size: 2rem !important;
+  font-weight: 600 !important;
+  line-height: 1.4 !important;
+}
+
+h4 {
+  font-size: 1.5rem !important;
+  font-weight: 500 !important;
+}
+
+/* Enhanced UI element styles */
+.button-primary {
+  background: linear-gradient(90.13deg, #915EFF 1.9%, #b066f7 97.5%);
+  border-radius: 8px;
+  padding: 0.6rem 1.5rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(145, 94, 255, 0.2);
+}
+
+.button-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(145, 94, 255, 0.4);
+}
+
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-10px);
+}
+
+/* Improved scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #13131d;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #915EFF;
+  border-radius: 6px;
+  border: 3px solid #13131d;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a57aff;
+}
+
 .hash-span {
   margin-top: -100px;
   padding-bottom: 100px;
@@ -112,6 +178,29 @@
   ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+/* Image and card glow effects */
+.glow-effect {
+  position: relative;
+}
+
+.glow-effect::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  box-shadow: 0 0 25px 2px rgba(145, 94, 255, 0.3);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+}
+
+.glow-effect:hover::after {
+  opacity: 1;
 }
 
 /* canvas- styles */
