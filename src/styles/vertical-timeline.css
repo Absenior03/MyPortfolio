@@ -1,0 +1,207 @@
+/* Vertical Timeline CSS */
+.vertical-timeline {
+  position: relative;
+  padding: 2em 0;
+  margin-top: 2em;
+  margin-bottom: 2em;
+  width: 100%;
+}
+
+.vertical-timeline-line {
+  position: absolute;
+  content: '';
+  width: 4px;
+  background-color: #915EFF;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-left: -2px;
+}
+
+@media only screen and (max-width: 1170px) {
+  .vertical-timeline-line {
+    left: 18px;
+  }
+}
+
+.vertical-timeline-element {
+  position: relative;
+  margin: 2em 0;
+}
+
+.vertical-timeline-element:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.vertical-timeline-element:first-child {
+  margin-top: 0;
+}
+
+.vertical-timeline-element:last-child {
+  margin-bottom: 0;
+}
+
+.vertical-timeline-element-icon {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px white, inset 0 2px 0 rgba(0, 0, 0, 0.08), 0 3px 0 4px rgba(0, 0, 0, 0.05);
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
+
+@media only screen and (max-width: 1170px) {
+  .vertical-timeline-element-icon {
+    left: 18px;
+    transform: translateX(-50%);
+    margin-left: 0;
+  }
+}
+
+.vertical-timeline-element-content {
+  position: relative;
+  margin-left: 60px;
+  background: #1d1836;
+  border-radius: 0.25em;
+  padding: 1.5em;
+  box-shadow: 0 3px 0 #ddd;
+  width: 44%;
+  margin-left: auto;
+  margin-right: auto;
+  color: white;
+}
+
+.vertical-timeline-element:nth-child(odd) .vertical-timeline-element-content {
+  float: right;
+  margin-left: auto;
+  margin-right: 0;
+}
+
+.vertical-timeline-element:nth-child(even) .vertical-timeline-element-content {
+  float: left;
+  margin-right: auto;
+  margin-left: 0;
+}
+
+@media only screen and (max-width: 1170px) {
+  .vertical-timeline-element-content {
+    margin-left: 70px;
+    width: calc(100% - 70px);
+  }
+  
+  .vertical-timeline-element:nth-child(odd) .vertical-timeline-element-content,
+  .vertical-timeline-element:nth-child(even) .vertical-timeline-element-content {
+    float: none;
+    margin-right: 0;
+    margin-left: 70px;
+  }
+}
+
+.vertical-timeline-element-content:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.vertical-timeline-element-content-arrow {
+  content: '';
+  position: absolute;
+  top: 16px;
+  right: 100%;
+  height: 0;
+  width: 0;
+  border: 7px solid transparent;
+  border-right: 7px solid #1d1836;
+}
+
+.vertical-timeline-element:nth-child(odd) .vertical-timeline-element-content-arrow {
+  right: auto;
+  left: 100%;
+  border-color: transparent;
+  border-left-color: #1d1836;
+}
+
+@media only screen and (max-width: 1170px) {
+  .vertical-timeline-element-content-arrow {
+    top: 16px;
+    left: auto;
+    right: 100%;
+    border-color: transparent;
+    border-right-color: #1d1836;
+  }
+  
+  .vertical-timeline-element:nth-child(odd) .vertical-timeline-element-content-arrow {
+    right: 100%;
+    left: auto;
+    border-color: transparent;
+    border-right-color: #1d1836;
+  }
+}
+
+.vertical-timeline-element-date {
+  position: absolute;
+  width: 100%;
+  left: 110%;
+  top: 6px;
+  font-size: 0.9em;
+  padding: .8em 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+.vertical-timeline-element:nth-child(even) .vertical-timeline-element-date {
+  left: auto;
+  right: 110%;
+  text-align: right;
+}
+
+@media only screen and (max-width: 1170px) {
+  .vertical-timeline-element-date {
+    display: block;
+    position: relative;
+    left: auto;
+    right: auto;
+    top: auto;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    text-align: left;
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 0.5em;
+    border-radius: 4px;
+  }
+  
+  .vertical-timeline-element:nth-child(even) .vertical-timeline-element-date {
+    left: auto;
+    right: auto;
+    text-align: left;
+  }
+}
+
+/* Animation */
+.vertical-timeline--animate .vertical-timeline-element-icon,
+.vertical-timeline--animate .vertical-timeline-element-content {
+  transition: all 0.4s;
+}
+
+.vertical-timeline--animate .vertical-timeline-element-content.is-hidden {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+.vertical-timeline--animate .vertical-timeline-element-icon.is-hidden {
+  opacity: 0;
+  transform: translateX(-50%) scale(0.5);
+}
+
+.vertical-timeline--animate .vertical-timeline-element:nth-child(even) .vertical-timeline-element-content.is-hidden {
+  transform: translateX(-20px);
+} 

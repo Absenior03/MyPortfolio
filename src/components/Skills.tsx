@@ -1,0 +1,165 @@
+import { useEffect, useRef } from "react";
+import { motion } from "framer-motion";
+import { styles } from "../styles";
+import SectionWrapper from "./SectionWrapper";
+import { skillCategories } from "../constants";
+import { fadeIn, textVariant } from "../utils/motion";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { Preload } from "@react-three/drei";
+import * as THREE from "three";
+
+gsap.registerPlugin(ScrollTrigger);
+
+interface SkillTagProps {
+  name: string;
+  index: number;
+  categoryIndex: number;
+}
+
+const SkillTag = ({ name, index, categoryIndex }: SkillTagProps) => {
+  return (
+    <motion.div
+      variants={fadeIn("up", "spring", index * 0.1 + categoryIndex * 0.3, 0.75)}
+      className="py-2 px-4 bg-tertiary rounded-full m-2 cursor-pointer hover:bg-[#915EFF] transition-colors duration-300"
+    >
+      <p className="text-white text-[14px] font-medium">{name}</p>
+    </motion.div>
+  );
+};
+
+// 3D Skills Graph component
+const SkillsGraph = () => {
+  const pointsRef = useRef<THREE.Points>(null);
+  const numPoints = 100;
+
+  // Create particles on mount
+  useEffect(() => {
+    if (pointsRef.current) {
+      const geometry = new THREE.BufferGeometry();
+      const positions = new Float32Array(numPoints * 3);
+      const colors = new Float32Array(numPoints * 3);
+      const sizes = new Float32Array(numPoints);
+
+      for (let i = 0; i < numPoints; i++) {
+        const i3 = i * 3;
+        // Create a sphere-like distribution
+        const radius = Math.random() * 4;
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(2 * Math.random() - 1);
+
+        positions[i3] = radius * Math.sin(phi) * Math.cos(theta);
+        positions[i3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+        positions[i3 + 2] = radius * Math.cos(phi);
+
+        // Assign colors based on position
+        colors[i3] = 0.5 + positions[i3] / 8;
+        colors[i3 + 1] = 0.5 + positions[i3 + 1] / 8;
+        colors[i3 + 2] = 0.8;
+
+        // Random sizes
+        sizes[i] = Math.random() * 0.1 + 0.05;
+      }
+
+      geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+      geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+      // Apply the geometry
+      pointsRef.current.geometry = geometry;
+    }
+  }, []);
+
+  useFrame((state, delta) => {
+    if (pointsRef.current) {
+      pointsRef.current.rotation.x += delta * 0.05;
+      pointsRef.current.rotation.y += delta * 0.07;
+    }
+  });
+
+  return (
+    <points ref={pointsRef}>
+      <pointsMaterial
+        size={0.15}
+        vertexColors
+        transparent
+        opacity={0.8}
+        sizeAttenuation={true}
+      />
+    </points>
+  );
+};
+
+const SkillsCanvas = () => {
+  return (
+    <div className="w-full h-[400px]">
+      <Canvas camera={{ position: [0, 0, 6], fov: 60 }}>
+        <ambientLight intensity={0.5} />
+        <SkillsGraph />
+        <Preload all />
+      </Canvas>
+    </div>
+  );
+};
+
+const Skills = () => {
+  useEffect(() => {
+    // GSAP scrolling animation
+    gsap.fromTo(
+      ".skills-title",
+      { y: 50, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        scrollTrigger: {
+          trigger: "#skills-section",
+          start: "top 80%",
+          end: "top 30%",
+          scrub: 1,
+        },
+      }
+    );
+  }, []);
+
+  return (
+    <div id="skills-section">
+      <motion.div className="skills-title" variants={textVariant()}>
+        <p className={styles.sectionSubText}>What I can do</p>
+        <h2 className={styles.sectionHeadText}>Skills & Technologies.</h2>
+      </motion.div>
+
+      <motion.div
+        variants={fadeIn("", "", 0.1, 1)}
+        className="mt-4 text-secondary text-[17px] max-w-3xl leading-[30px]"
+      >
+        I'm proficient in a wide range of programming languages and technologies, 
+        with expertise in web development, cloud technologies, and software engineering. 
+        Here's a comprehensive look at my technical skills:
+      </motion.div>
+
+      <SkillsCanvas />
+
+      <div className="mt-8">
+        {skillCategories.map((category, categoryIndex) => (
+          <div key={category.title} className="mb-8">
+            <h3 className="text-white text-[20px] font-bold mb-5">{category.title}</h3>
+            <div className="flex flex-wrap">
+              {category.skills.map((skill, index) => (
+                <SkillTag
+                  key={skill}
+                  name={skill}
+                  index={index}
+                  categoryIndex={categoryIndex}
+                />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default SectionWrapper(Skills, "skills"); 
