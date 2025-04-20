@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { styles } from "../styles";
 import SectionWrapper from "./SectionWrapper";
 import { slideIn } from "../utils/motion";
-import { FiGithub, FiLinkedin, FiMail, FiMapPin, FiPhone } from "react-icons/fi";
+import { FiGithub, FiLinkedin, FiMail, FiMapPin, FiPhone, FiDownload } from "react-icons/fi";
 import gsap from "gsap";
 import IconWrapper from "./IconWrapper";
 
@@ -93,160 +93,181 @@ const Contact = () => {
   };
 
   return (
-    <div id="contact-section" className="xl:mt-12 xl:flex-row flex-col-reverse flex gap-10 overflow-hidden">
-      <motion.div
-        variants={slideIn("left", "tween", 0.2, 1)}
-        className="flex-[0.75] bg-black-100 p-8 rounded-2xl"
+    <div id="contact-section" className="xl:mt-8 xl:flex-row flex-col-reverse flex gap-10 overflow-hidden">
+      <div
+        className="flex-[0.75] bg-[rgba(21,19,40,0.7)] p-8 rounded-lg border border-[rgba(145,94,255,0.2)]"
       >
-        <p className={styles.sectionSubText}>Get in touch</p>
-        <h3 className={styles.sectionHeadText}>Contact.</h3>
+        <p className="sectionSubText">Get in touch</p>
+        <h3 className="sectionHeadText">Contact.</h3>
 
         {formSubmitted ? (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="mt-12 flex flex-col bg-tertiary p-8 rounded-2xl"
+          <div
+            className="mt-10 flex flex-col bg-[rgba(26,23,41,0.8)] p-6 rounded-lg border border-green-500/20"
           >
-            <h4 className="text-white font-bold text-2xl mb-4">Thank you!</h4>
-            <p className="text-white-100">
+            <div className="mb-4 flex items-center justify-center">
+              <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+            </div>
+            <h4 className="text-white font-bold text-lg mb-2 text-center">Thank you!</h4>
+            <p className="text-[#aaa6c3] text-center">
               Your message has been sent successfully. I'll get back to you as soon as possible.
             </p>
-          </motion.div>
+          </div>
         ) : (
           <form
             ref={formRef}
             onSubmit={handleSubmit}
-            className="mt-12 flex flex-col gap-8"
+            className="mt-8 flex flex-col gap-6"
           >
             <label className="flex flex-col">
-              <span className="text-white font-medium mb-4">Your Name</span>
+              <span className="text-white font-medium mb-2">Your Name</span>
               <input
                 type="text"
                 name="name"
                 value={form.name}
                 onChange={handleChange}
                 placeholder="What's your name?"
-                className={`bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium ${
-                  errors.name ? "border-2 border-red-500" : ""
-                }`}
+                className={`${errors.name ? "border-red-500" : ""}`}
               />
               {errors.name && (
-                <span className="text-red-500 mt-1">{errors.name}</span>
+                <span className="text-red-500 mt-1 text-sm">{errors.name}</span>
               )}
             </label>
 
             <label className="flex flex-col">
-              <span className="text-white font-medium mb-4">Your Email</span>
+              <span className="text-white font-medium mb-2">Your Email</span>
               <input
                 type="email"
                 name="email"
                 value={form.email}
                 onChange={handleChange}
                 placeholder="What's your email?"
-                className={`bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium ${
-                  errors.email ? "border-2 border-red-500" : ""
-                }`}
+                className={`${errors.email ? "border-red-500" : ""}`}
               />
               {errors.email && (
-                <span className="text-red-500 mt-1">{errors.email}</span>
+                <span className="text-red-500 mt-1 text-sm">{errors.email}</span>
               )}
             </label>
 
             <label className="flex flex-col">
-              <span className="text-white font-medium mb-4">Your Message</span>
+              <span className="text-white font-medium mb-2">Your Message</span>
               <textarea
-                rows={7}
+                rows={5}
                 name="message"
                 value={form.message}
                 onChange={handleChange}
                 placeholder="What would you like to say?"
-                className={`bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium resize-none ${
-                  errors.message ? "border-2 border-red-500" : ""
-                }`}
+                className={`resize-none ${errors.message ? "border-red-500" : ""}`}
               />
               {errors.message && (
-                <span className="text-red-500 mt-1">{errors.message}</span>
+                <span className="text-red-500 mt-1 text-sm">{errors.message}</span>
               )}
             </label>
 
             <button
               type="submit"
               disabled={loading}
-              className="bg-tertiary hover:bg-[#915EFF] transition-colors py-3 px-8 outline-none w-fit text-white font-bold shadow-md shadow-primary rounded-xl"
+              className="button-primary py-3 px-8 w-fit mt-2"
             >
               {loading ? "Sending..." : "Send Message"}
             </button>
           </form>
         )}
-      </motion.div>
+      </div>
 
-      <motion.div
-        variants={slideIn("right", "tween", 0.2, 1)}
+      <div
         className="xl:flex-1 xl:h-auto md:h-[550px] h-[350px]"
       >
         <div className="h-full flex flex-col justify-center">
-          <h3 className={`${styles.sectionHeadText} mb-10`} style={{ color: "white", textShadow: "0 2px 4px rgba(0,0,0,0.8)" }}>
-            Contact Info.
+          <h3 className="sectionHeadText mb-6 text-center xl:text-left">
+            Contact Info
           </h3>
           
-          <div className="grid gap-4">
-            <div className="contact-item flex items-center gap-4" style={{ backgroundColor: "#15112b", padding: "16px", borderRadius: "8px", boxShadow: "0 4px 8px rgba(0,0,0,0.5)", border: "2px solid rgba(145, 94, 255, 0.5)" }}>
-              <div style={{ backgroundColor: "#915EFF", padding: "12px", borderRadius: "9999px", flexShrink: 0 }}>
-                <IconWrapper icon={FiMail} className="text-white text-xl" />
+          <div className="grid gap-5">
+            <div className="contact-info-card flex items-center gap-5">
+              <div className="contact-icon-container">
+                <FiMail className="text-white text-xl" />
               </div>
               <div>
-                <h4 style={{ color: "#ffffff", fontWeight: "800", fontSize: "1.25rem", marginBottom: "4px", textShadow: "0 2px 4px rgba(0,0,0,0.9)" }}>Email</h4>
-                <p style={{ color: "#ffffff", fontWeight: "600", textShadow: "0 2px 4px rgba(0,0,0,0.9)", letterSpacing: "0.02em" }}>anirbanbanerjee1087@gmail.com</p>
+                <h4 className="contact-title">Email</h4>
+                <p className="contact-text">anirbanbanerjee1087@gmail.com</p>
               </div>
             </div>
             
-            <div className="contact-item flex items-center gap-4" style={{ backgroundColor: "#15112b", padding: "16px", borderRadius: "8px", boxShadow: "0 4px 8px rgba(0,0,0,0.5)", border: "2px solid rgba(145, 94, 255, 0.5)" }}>
-              <div style={{ backgroundColor: "#915EFF", padding: "12px", borderRadius: "9999px", flexShrink: 0 }}>
-                <IconWrapper icon={FiPhone} className="text-white text-xl" />
+            <div className="contact-info-card flex items-center gap-5">
+              <div className="contact-icon-container">
+                <FiPhone className="text-white text-xl" />
               </div>
               <div>
-                <h4 style={{ color: "#ffffff", fontWeight: "800", fontSize: "1.25rem", marginBottom: "4px", textShadow: "0 2px 4px rgba(0,0,0,0.9)" }}>Phone</h4>
-                <p style={{ color: "#ffffff", fontWeight: "600", textShadow: "0 2px 4px rgba(0,0,0,0.9)", letterSpacing: "0.02em" }}>+91-7908940076</p>
+                <h4 className="contact-title">Phone</h4>
+                <p className="contact-text">+91-7908940076</p>
               </div>
             </div>
             
-            <div className="contact-item flex items-center gap-4" style={{ backgroundColor: "#15112b", padding: "16px", borderRadius: "8px", boxShadow: "0 4px 8px rgba(0,0,0,0.5)", border: "2px solid rgba(145, 94, 255, 0.5)" }}>
-              <div style={{ backgroundColor: "#915EFF", padding: "12px", borderRadius: "9999px", flexShrink: 0 }}>
-                <IconWrapper icon={FiMapPin} className="text-white text-xl" />
+            <div className="contact-info-card flex items-center gap-5">
+              <div className="contact-icon-container">
+                <FiMapPin className="text-white text-xl" />
               </div>
               <div>
-                <h4 style={{ color: "#ffffff", fontWeight: "800", fontSize: "1.25rem", marginBottom: "4px", textShadow: "0 2px 4px rgba(0,0,0,0.9)" }}>Location</h4>
-                <p style={{ color: "#ffffff", fontWeight: "600", textShadow: "0 2px 4px rgba(0,0,0,0.9)", letterSpacing: "0.02em" }}>Bengaluru, India</p>
+                <h4 className="contact-title">Location</h4>
+                <p className="contact-text">Bengaluru, India</p>
               </div>
             </div>
             
-            <div className="contact-item flex items-center gap-4 mt-6" style={{ backgroundColor: "#15112b", padding: "16px", borderRadius: "8px", boxShadow: "0 4px 8px rgba(0,0,0,0.5)", border: "2px solid rgba(145, 94, 255, 0.5)" }}>
+            <div className="contact-info-card flex items-center justify-between gap-5 mt-2">
+              <div className="flex items-center gap-5">
+                <div className="contact-icon-container">
+                  <FiDownload className="text-white text-xl" />
+                </div>
+                <div>
+                  <h4 className="contact-title">Resume</h4>
+                  <p className="contact-text">Download my CV</p>
+                </div>
+              </div>
+              <a 
+                href="/assets/Anirban_Banerjee_Resume.pdf" 
+                download
+                className="button-primary py-2 px-4 text-sm"
+              >
+                Download
+              </a>
+            </div>
+            
+            <div className="flex items-center justify-center gap-6 mt-6">
               <a
                 href="https://github.com/Absenior03"
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ backgroundColor: "#915EFF", padding: "12px", borderRadius: "9999px", display: "flex", justifyContent: "center", alignItems: "center", transition: "all 0.3s" }}
-                onMouseOver={(e) => e.currentTarget.style.backgroundColor = "#7e3cf7"}
-                onMouseOut={(e) => e.currentTarget.style.backgroundColor = "#915EFF"}
+                className="contact-icon-container hover:scale-110 transition-transform"
+                aria-label="GitHub"
               >
-                <IconWrapper icon={FiGithub} className="text-white text-xl" />
+                <FiGithub className="text-white text-xl" />
               </a>
               
               <a
                 href="https://www.linkedin.com/in/anirban-banerjee-b8a75b1a9/"
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ backgroundColor: "#915EFF", padding: "12px", borderRadius: "9999px", display: "flex", justifyContent: "center", alignItems: "center", transition: "all 0.3s" }}
-                onMouseOver={(e) => e.currentTarget.style.backgroundColor = "#7e3cf7"}
-                onMouseOut={(e) => e.currentTarget.style.backgroundColor = "#915EFF"}
+                className="contact-icon-container hover:scale-110 transition-transform"
+                aria-label="LinkedIn"
               >
-                <IconWrapper icon={FiLinkedin} className="text-white text-xl" />
+                <FiLinkedin className="text-white text-xl" />
+              </a>
+              
+              <a
+                href={`mailto:anirbanbanerjee1087@gmail.com`}
+                className="contact-icon-container hover:scale-110 transition-transform"
+                aria-label="Email"
+              >
+                <FiMail className="text-white text-xl" />
               </a>
             </div>
           </div>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 };

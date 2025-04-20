@@ -13,6 +13,50 @@
   color-scheme: dark;
 }
 
+/* Increased spacing between sections */
+.section-padding {
+  margin-top: 3rem;
+  margin-bottom: 3rem;
+  padding-top: 1rem;
+  padding-bottom: 2rem;
+}
+
+/* Contact info card styling */
+.contact-info-card {
+  background-color: rgba(21, 17, 43, 0.9) !important;
+  padding: 16px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6) !important;
+  backdrop-filter: blur(15px) !important;
+  margin-bottom: 18px !important;
+  border: 1px solid rgba(145, 94, 255, 0.4) !important;
+  transition: all 0.3s ease;
+}
+
+.contact-info-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7) !important;
+  border: 1px solid rgba(145, 94, 255, 0.7) !important;
+}
+
+/* Button primary styling */
+.button-primary {
+  background: linear-gradient(90.13deg, #804dee 1.9%, #9f65ff 97.5%);
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: none;
+  outline: none;
+  box-shadow: 0 4px 10px rgba(128, 77, 238, 0.5);
+}
+
+.button-primary:hover {
+  background: linear-gradient(90.13deg, #9f65ff 1.9%, #804dee 97.5%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(128, 77, 238, 0.7);
+}
+
 /* Fix for transparent text in contact and projects sections */
 .contact-item h4,
 .contact-item p {
@@ -27,6 +71,29 @@
   color: white !important;
   opacity: 1 !important;
   font-weight: 500 !important;
+}
+
+/* Contact icon container */
+.contact-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #9f65ff, #804dee);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  flex-shrink: 0;
+}
+
+.contact-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  background: linear-gradient(90deg, #ffffff, #c4b5fd);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
 }
 
 .project-card p,
