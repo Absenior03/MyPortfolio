@@ -38,6 +38,34 @@ const ProjectCard = ({
   const cardRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  // Track mouse position for dynamic shadow
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    
+    const card = cardRef.current;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left; // x position within the element
+    const y = e.clientY - rect.top;  // y position within the element
+    
+    setMousePosition({ x, y });
+    
+    // Calculate shadow position and intensity based on mouse position
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const shadowX = (x - centerX) / 10;
+    const shadowY = (y - centerY) / 10;
+    const distance = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
+    const shadowIntensity = Math.min(20, distance / 10);
+    
+    // Apply dynamic shadow based on mouse position
+    gsap.to(card, {
+      boxShadow: `${shadowX}px ${shadowY}px ${shadowIntensity}px rgba(145, 94, 255, 0.3), 
+                  0 15px 35px rgba(0, 0, 0, 0.2)`,
+      duration: 0.5,
+    });
+  };
 
   // Enhanced hover effects
   useEffect(() => {
@@ -47,7 +75,7 @@ const ProjectCard = ({
         const tl = gsap.timeline();
         tl.to(cardRef.current, {
           y: -10,
-          boxShadow: "0 22px 40px rgba(0, 0, 0, 0.3)",
+          boxShadow: "0 22px 40px rgba(145, 94, 255, 0.3)",
           duration: 0.3,
           ease: "power2.out",
         })
@@ -94,14 +122,39 @@ const ProjectCard = ({
       className="h-full flex"
     >
       <Tilt
-        tiltMaxAngleX={15}
-        tiltMaxAngleY={15}
-        scale={1.02}
+        tiltMaxAngleX={10}
+        tiltMaxAngleY={10}
+        scale={1.05}
         transitionSpeed={1500}
         gyroscope={true}
         className="h-full w-full"
+        perspective={1000}
+        glareEnable={true}
+        glareMaxOpacity={0.15}
+        glareColor="#915eff"
+        glarePosition="all"
         onEnter={() => setIsHovered(true)}
         onLeave={() => setIsHovered(false)}
+        onMove={(values) => {
+          if (cardRef.current) {
+            const card = cardRef.current;
+            const { tiltAngleX, tiltAngleY } = values;
+            
+            // Calculate shadow position based on tilt angles
+            const shadowX = tiltAngleY / 2;
+            const shadowY = -tiltAngleX / 2;
+            const shadowIntensity = Math.min(20, Math.sqrt(shadowX**2 + shadowY**2) * 2);
+            
+            gsap.to(card, {
+              boxShadow: `${shadowX}px ${shadowY}px ${shadowIntensity}px rgba(145, 94, 255, 0.3), 
+                          0 15px 35px rgba(0, 0, 0, 0.2)`,
+              duration: 0.5,
+            });
+          }
+        }}
+        tiltAngleXInitial={0}
+        tiltAngleYInitial={0}
+        tiltEnable={true}
       >
         <div 
           ref={cardRef}
@@ -110,9 +163,10 @@ const ProjectCard = ({
             transition: "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
             transform: isHovered ? "translateY(-10px)" : "translateY(0)",
             boxShadow: isHovered 
-              ? "0 22px 40px rgba(0, 0, 0, 0.3)" 
+              ? "0 22px 40px rgba(145, 94, 255, 0.3)" 
               : "0 10px 20px rgba(0, 0, 0, 0.2)",
             border: "1px solid rgba(255, 255, 255, 0.1)",
+            transformStyle: "preserve-3d",
           }}
         >
           {/* Project image with links to source code and live demo */}
@@ -179,18 +233,19 @@ const ProjectCard = ({
             className="p-6 flex-1 flex flex-col justify-between"
             style={{
               transition: "transform 0.3s ease-out",
+              transform: `translateZ(${isHovered ? '20' : '0'}px)`,
             }}
           >
             <div>
-              <h3 className="text-white font-bold text-[22px] leading-tight mb-2">{name}</h3>
-              <p className="mt-1 text-secondary text-[14px] leading-relaxed overflow-hidden line-clamp-3">
+              <h3 className="text-white font-bold text-[22px] leading-tight mb-2" style={{ transform: `translateZ(${isHovered ? '30' : '0'}px)` }}>{name}</h3>
+              <p className="mt-1 text-secondary text-[14px] leading-relaxed overflow-hidden line-clamp-3" style={{ transform: `translateZ(${isHovered ? '15' : '0'}px)` }}>
                 {description}
               </p>
             </div>
 
             {/* Project tags */}
             <div className="mt-4 flex flex-wrap gap-2">
-              {tags.map((tag) => (
+              {tags.map((tag, tagIndex) => (
                 <p
                   key={`${name}-${tag.name}`}
                   className={`text-[12px] ${tag.color} py-1 px-2 rounded-full bg-black bg-opacity-30 backdrop-blur-sm whitespace-nowrap`}
@@ -204,7 +259,7 @@ const ProjectCard = ({
                              tag.color === 'text-yellow-500' ? 'rgba(234, 179, 8, 0.5)' : 'rgba(255, 255, 255, 0.2)'}`,
                     boxShadow: '0 2px 5px rgba(0, 0, 0, 0.15)',
                     transition: 'all 0.3s ease',
-                    transform: isHovered ? 'translateY(-2px)' : 'translateY(0)',
+                    transform: isHovered ? `translateY(-2px) translateZ(${10 + tagIndex * 2}px)` : 'translateY(0) translateZ(0)',
                   }}
                 >
                   #{tag.name}
