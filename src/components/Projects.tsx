@@ -4,9 +4,13 @@ import { styles } from "../styles";
 import SectionWrapper from "./SectionWrapper";
 import { projects } from "../constants";
 import { fadeIn, textVariant } from "../utils/motion";
-import { FiGithub, FiExternalLink } from "react-icons/fi";
 import gsap from "gsap";
-import IconWrapper from "./IconWrapper";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Tilt from "react-parallax-tilt";
+import { github, external } from "../assets";
+
+// Register ScrollTrigger plugin
+gsap.registerPlugin(ScrollTrigger);
 
 interface ProjectCardProps {
   index: number;
@@ -31,206 +35,236 @@ const ProjectCard = ({
   live_demo_link,
 }: ProjectCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // Enhanced hover effects
+  useEffect(() => {
+    if (cardRef.current && imageRef.current && contentRef.current) {
+      if (isHovered) {
+        // Create a timeline for more coordinated animations
+        const tl = gsap.timeline();
+        tl.to(cardRef.current, {
+          y: -10,
+          boxShadow: "0 22px 40px rgba(0, 0, 0, 0.3)",
+          duration: 0.3,
+          ease: "power2.out",
+        })
+        .to(imageRef.current, {
+          scale: 1.05,
+          duration: 0.4,
+          delay: -0.3,
+          ease: "power2.out",
+        })
+        .to(contentRef.current, {
+          y: -5,
+          duration: 0.3,
+          delay: -0.4,
+          ease: "power2.out",
+        });
+      } else {
+        // Reset animations
+        const tl = gsap.timeline();
+        tl.to(cardRef.current, {
+          y: 0,
+          boxShadow: "0 10px 20px rgba(0, 0, 0, 0.2)",
+          duration: 0.5,
+          ease: "power3.out",
+        })
+        .to(imageRef.current, {
+          scale: 1,
+          duration: 0.5,
+          delay: -0.5,
+          ease: "power3.out",
+        })
+        .to(contentRef.current, {
+          y: 0,
+          duration: 0.4,
+          delay: -0.5,
+          ease: "power3.out",
+        });
+      }
+    }
+  }, [isHovered]);
 
   return (
-    <motion.div
+    <motion.div 
       variants={fadeIn("up", "spring", index * 0.5, 0.75)}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className="relative bg-tertiary p-5 rounded-2xl sm:w-[360px] w-full h-[480px] overflow-hidden cursor-pointer project-card"
-      style={{ 
-        boxShadow: "0 10px 30px rgba(0, 0, 0, 0.5)",
-        border: "2px solid rgba(145, 94, 255, 0.5)",
-        backgroundColor: "#15112b" 
-      }}
+      className="h-full flex"
     >
-      <div className="relative w-full h-[230px] overflow-hidden rounded-2xl" 
-        style={{ border: "2px solid rgba(145, 94, 255, 0.5)" }}
+      <Tilt
+        tiltMaxAngleX={15}
+        tiltMaxAngleY={15}
+        scale={1.02}
+        transitionSpeed={1500}
+        gyroscope={true}
+        className="h-full w-full"
+        onEnter={() => setIsHovered(true)}
+        onLeave={() => setIsHovered(false)}
       >
-        {/* Placeholder for project image */}
-        <div
-          className={`w-full h-full transition-all duration-500 ${
-            isHovered ? "scale-105" : "scale-100"
-          }`}
+        <div 
+          ref={cardRef}
+          className="bg-tertiary rounded-2xl w-full h-full flex flex-col relative"
           style={{
-            background: "linear-gradient(to right, #7928CA, #4338CA)"
+            transition: "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+            transform: isHovered ? "translateY(-10px)" : "translateY(0)",
+            boxShadow: isHovered 
+              ? "0 22px 40px rgba(0, 0, 0, 0.3)" 
+              : "0 10px 20px rgba(0, 0, 0, 0.2)",
+            border: "1px solid rgba(255, 255, 255, 0.1)",
           }}
         >
-          <div className="absolute inset-0 flex justify-center items-center">
-            <h3 style={{ color: "white", fontSize: "1.875rem", fontWeight: "bold", textShadow: "0 2px 4px rgba(0,0,0,0.8)" }}>
-              {name.charAt(0)}
-            </h3>
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-5" style={{ backgroundColor: "#0e0a1f", padding: "12px", borderRadius: "8px", boxShadow: "0 4px 8px rgba(0,0,0,0.5)", border: "1px solid rgba(145, 94, 255, 0.3)" }}>
-        <div className="flex justify-between items-center">
-          <h3 style={{ color: "white", fontWeight: "bold", fontSize: "1.5rem", textShadow: "0 2px 4px rgba(0,0,0,0.8)" }}>
-            {name}
-          </h3>
-          <div className="flex gap-2">
-            <a
-              href={source_code_link}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ 
-                backgroundColor: "#915EFF", 
-                width: "2.5rem", 
-                height: "2.5rem", 
-                borderRadius: "9999px", 
-                display: "flex", 
-                justifyContent: "center", 
-                alignItems: "center",
-                cursor: "pointer"
+          {/* Project image with links to source code and live demo */}
+          <div className="relative w-full h-[220px] overflow-hidden rounded-t-2xl">
+            <img
+              ref={imageRef}
+              src={image}
+              alt={`Project ${name} screenshot`}
+              className="w-full h-full object-cover"
+              style={{
+                transition: "transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
               }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <IconWrapper icon={FiGithub} className="w-1/2 h-1/2 text-white" />
-            </a>
-            <a
-              href={live_demo_link}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ 
-                backgroundColor: "#915EFF", 
-                width: "2.5rem", 
-                height: "2.5rem", 
-                borderRadius: "9999px", 
-                display: "flex", 
-                justifyContent: "center", 
-                alignItems: "center",
-                cursor: "pointer"
-              }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <IconWrapper icon={FiExternalLink} className="w-1/2 h-1/2 text-white" />
-            </a>
-          </div>
-        </div>
-        <p style={{ 
-          color: "white", 
-          marginTop: "0.5rem", 
-          fontSize: "0.875rem", 
-          fontWeight: "500",
-          textShadow: "0 1px 2px rgba(0,0,0,0.8)" 
-        }}>
-          {description}
-        </p>
-      </div>
+            />
 
-      <div className="mt-4 flex flex-wrap gap-2" style={{ 
-        padding: "0.5rem",
-        backgroundColor: "#0e0a1f", 
-        borderRadius: "0.5rem", 
-        boxShadow: "0 4px 8px rgba(0,0,0,0.5)",
-        border: "1px solid rgba(145, 94, 255, 0.3)"
-      }}>
-        {tags.map((tag) => (
-          <p
-            key={`${name}-${tag.name}`}
-            className={`${tag.color}`}
-            style={{ 
-              fontSize: "0.875rem", 
-              fontWeight: "500",
-              padding: "0.25rem 0.5rem",
-              backgroundColor: "rgba(0, 0, 0, 0.5)",
-              backdropFilter: "blur(5px)",
-              borderRadius: "0.25rem",
-              border: "1px solid rgba(145, 94, 255, 0.2)",
-              textShadow: "0 1px 2px rgba(0,0,0,0.8)"
-            }}
-          >
-            #{tag.name}
-          </p>
-        ))}
-      </div>
+            {/* Overlay gradient */}
+            <div 
+              className={`absolute inset-0 bg-gradient-to-t from-tertiary to-transparent opacity-60 transition-opacity duration-300 ${isHovered ? 'opacity-40' : 'opacity-60'}`}
+            ></div>
 
-      {isHovered && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
-          className="absolute inset-0 flex items-center justify-center"
-          style={{ backgroundColor: "rgba(0, 0, 0, 0.95)" }}
-        >
-          <div className="text-center p-5">
-            <h3 style={{ color: "white", fontWeight: "bold", fontSize: "1.5rem", marginBottom: "0.75rem", textShadow: "0 2px 4px rgba(0,0,0,0.8)" }}>
-              {name}
-            </h3>
-            <p style={{ color: "white", marginBottom: "1.25rem", fontWeight: "500", textShadow: "0 1px 2px rgba(0,0,0,0.8)" }}>
-              {description}
-            </p>
-            <div className="flex space-x-4 justify-center">
-              <a
-                href={source_code_link}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  padding: "0.5rem 1rem",
-                  backgroundColor: "#915EFF",
-                  color: "white",
-                  borderRadius: "0.5rem",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.5rem",
-                  transition: "all 0.3s",
-                  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.3)"
-                }}
-                onMouseOver={(e) => e.currentTarget.style.opacity = "0.8"}
-                onMouseOut={(e) => e.currentTarget.style.opacity = "1"}
-              >
-                <IconWrapper icon={FiGithub} /> GitHub
-              </a>
-              <a
-                href={live_demo_link}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  padding: "0.5rem 1rem",
-                  backgroundColor: "#00cea8",
-                  color: "white",
-                  borderRadius: "0.5rem",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.5rem",
-                  transition: "all 0.3s",
-                  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.3)"
-                }}
-                onMouseOver={(e) => e.currentTarget.style.opacity = "0.8"}
-                onMouseOut={(e) => e.currentTarget.style.opacity = "1"}
-              >
-                <IconWrapper icon={FiExternalLink} /> Live Demo
-              </a>
+            <div className="absolute inset-0 flex justify-end gap-2 m-3">
+              {/* GitHub link */}
+              {source_code_link && (
+                <div
+                  onClick={() => window.open(source_code_link, "_blank")}
+                  className="black-gradient w-10 h-10 rounded-full flex justify-center items-center cursor-pointer hover:scale-110 transition-transform duration-300"
+                  aria-label="View source code"
+                  style={{
+                    backdropFilter: "blur(4px)",
+                    border: "1px solid rgba(255, 255, 255, 0.1)",
+                  }}
+                >
+                  <img
+                    src={github}
+                    alt="source code"
+                    className="w-1/2 h-1/2 object-contain"
+                  />
+                </div>
+              )}
+              
+              {/* Live demo link (if available) */}
+              {live_demo_link && (
+                <div
+                  onClick={() => window.open(live_demo_link, "_blank")}
+                  className="black-gradient w-10 h-10 rounded-full flex justify-center items-center cursor-pointer hover:scale-110 transition-transform duration-300"
+                  aria-label="View live demo"
+                  style={{
+                    backdropFilter: "blur(4px)",
+                    border: "1px solid rgba(255, 255, 255, 0.1)",
+                  }}
+                >
+                  <img
+                    src={external}
+                    alt="live demo"
+                    className="w-1/2 h-1/2 object-contain"
+                  />
+                </div>
+              )}
             </div>
           </div>
-        </motion.div>
-      )}
+
+          {/* Project details */}
+          <div 
+            ref={contentRef}
+            className="p-6 flex-1 flex flex-col justify-between"
+            style={{
+              transition: "transform 0.3s ease-out",
+            }}
+          >
+            <div>
+              <h3 className="text-white font-bold text-[22px] leading-tight mb-2">{name}</h3>
+              <p className="mt-1 text-secondary text-[14px] leading-relaxed overflow-hidden line-clamp-3">
+                {description}
+              </p>
+            </div>
+
+            {/* Project tags */}
+            <div className="mt-4 flex flex-wrap gap-2">
+              {tags.map((tag) => (
+                <p
+                  key={`${name}-${tag.name}`}
+                  className={`text-[12px] ${tag.color} py-1 px-2 rounded-full bg-black bg-opacity-30 backdrop-blur-sm whitespace-nowrap`}
+                  style={{ 
+                    border: `1px solid ${tag.color === 'text-blue-500' ? 'rgba(59, 130, 246, 0.5)' : 
+                             tag.color === 'text-green-500' ? 'rgba(34, 197, 94, 0.5)' : 
+                             tag.color === 'text-pink-500' ? 'rgba(236, 72, 153, 0.5)' : 
+                             tag.color === 'text-purple-500' ? 'rgba(168, 85, 247, 0.5)' : 
+                             tag.color === 'text-red-500' ? 'rgba(239, 68, 68, 0.5)' : 
+                             tag.color === 'text-orange-500' ? 'rgba(249, 115, 22, 0.5)' : 
+                             tag.color === 'text-yellow-500' ? 'rgba(234, 179, 8, 0.5)' : 'rgba(255, 255, 255, 0.2)'}`,
+                    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.15)',
+                    transition: 'all 0.3s ease',
+                    transform: isHovered ? 'translateY(-2px)' : 'translateY(0)',
+                  }}
+                >
+                  #{tag.name}
+                </p>
+              ))}
+            </div>
+          </div>
+        </div>
+      </Tilt>
     </motion.div>
   );
 };
 
 const Projects = () => {
   const projectsRef = useRef<HTMLDivElement>(null);
+  const projectCardsRefs = useRef<HTMLDivElement[]>([]);
 
   useEffect(() => {
-    // GSAP animation for the project cards
+    // Set up GSAP animations for the project cards
     if (projectsRef.current) {
-      const cards = projectsRef.current.querySelectorAll(".project-card");
+      // Clear any previous refs
+      projectCardsRefs.current = [];
       
-      gsap.from(cards, {
-        y: 100,
-        opacity: 0,
-        stagger: 0.1,
-        duration: 0.8,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: projectsRef.current,
-          start: "top 80%",
-          end: "bottom 20%",
-        },
+      // Get all project cards
+      const cards = projectsRef.current.querySelectorAll(".project-card-wrapper");
+      cards.forEach((card, index) => {
+        projectCardsRefs.current[index] = card as HTMLDivElement;
+      });
+      
+      // Set up ScrollTrigger for staggered animations
+      projectCardsRefs.current.forEach((card, index) => {
+        gsap.fromTo(
+          card,
+          { 
+            y: 100, 
+            opacity: 0,
+            scale: 0.9,
+          },
+          {
+            y: 0,
+            opacity: 1,
+            scale: 1,
+            duration: 0.8,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: card,
+              start: "top bottom-=100",
+              end: "bottom center",
+              toggleActions: "play none none none",
+            },
+            delay: index * 0.15,
+          }
+        );
       });
     }
+    
+    return () => {
+      // Clean up ScrollTrigger instances when component unmounts
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    };
   }, []);
 
   return (
@@ -251,9 +285,12 @@ const Projects = () => {
         </motion.p>
       </div>
 
-      <div ref={projectsRef} className="mt-20 flex flex-wrap gap-7 justify-center">
+      <div 
+        ref={projectsRef} 
+        className="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7 auto-rows-fr"
+      >
         {projects.map((project, index) => (
-          <div key={`project-${index}`} className="project-card">
+          <div key={`project-${index}`} className="project-card-wrapper h-full">
             <ProjectCard index={index} {...project} />
           </div>
         ))}
