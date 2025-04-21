@@ -1,6 +1,78 @@
-# Anirban Banerjee - Interactive Portfolio
+# Anirban Banerjee's Portfolio
 
-A visually stunning, scroll-interactive personal portfolio website showcasing my skills, experience, projects, and more.
+A modern, interactive portfolio website built with React, Next.js, and Three.js.
+
+## 🚀 Deployment Requirements
+
+This project uses Three.js and related libraries for 3D visualizations. When deploying, please ensure you have the following version requirements:
+
+```json
+"dependencies": {
+  "three": "^0.159.0",
+  "@react-three/drei": "^9.88.0",
+  "@react-three/fiber": "^8.15.11"
+}
+```
+
+## 🛠️ Setup & Installation
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/Absenior03/MyPortfolio.git
+cd MyPortfolio
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Run the development server:
+
+```bash
+npm run dev
+```
+
+4. Build for production:
+
+```bash
+npm run build
+```
+
+5. Start the production server:
+
+```bash
+npm start
+```
+
+## 🔍 Troubleshooting Deployment
+
+If you encounter Three.js related errors during deployment, make sure:
+
+1. You have the correct versions of Three.js, @react-three/drei, and @react-three/fiber as specified above
+2. The package-lock.json is committed to your repository
+3. Your deployment platform is using the correct Node.js version (14.x or higher)
+
+### Common Errors
+
+- **'BatchedMesh' is not exported from 'three'**: This indicates a version mismatch. Update to three.js ^0.159.0 to resolve.
+
+## 🧰 Technologies Used
+
+- React
+- Next.js
+- Three.js
+- Framer Motion
+- Tailwind CSS
+- TypeScript
+
+## 📝 Contact Information
+
+- **Email**: anirbanbanerjee1087@gmail.com
+- **GitHub**: [Absenior03](https://github.com/Absenior03)
+- **LinkedIn**: [Anirban Banerjee](https://www.linkedin.com/in/anirban-banerjee-b8a75b1a9/)
 
 ## 🚀 Features
 
@@ -11,16 +83,6 @@ A visually stunning, scroll-interactive personal portfolio website showcasing my
 - **Dark Mode**: Dark-themed UI for a professional look
 - **Interactive Sections**: Projects showcase, skills visualization, testimonials slider
 - **Contact Form**: Interactive contact form with validation
-
-## 🛠️ Technologies Used
-
-- **React**: Frontend UI library
-- **TypeScript**: Type-safe JavaScript
-- **Three.js/React Three Fiber**: 3D graphics and animations
-- **GSAP**: Advanced animations and scroll triggers
-- **Tailwind CSS**: Utility-first CSS framework
-- **Framer Motion**: Animation library for React
-- **React Router**: Client-side routing
 
 ## 🏗️ Project Structure
 

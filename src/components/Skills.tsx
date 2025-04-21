@@ -29,66 +29,54 @@ const SkillTag = ({ name, index, categoryIndex }: SkillTagProps) => {
   );
 };
 
-// 3D Skills Graph component
+// Simplified 3D Skills visualization without BVH dependency
 const SkillsGraph = () => {
-  const pointsRef = useRef<THREE.Points>(null);
-  const numPoints = 100;
-
-  // Create particles on mount
+  const groupRef = useRef<THREE.Group>(null);
+  
   useEffect(() => {
-    if (pointsRef.current) {
-      const geometry = new THREE.BufferGeometry();
-      const positions = new Float32Array(numPoints * 3);
-      const colors = new Float32Array(numPoints * 3);
-      const sizes = new Float32Array(numPoints);
-
-      for (let i = 0; i < numPoints; i++) {
-        const i3 = i * 3;
-        // Create a sphere-like distribution
+    if (groupRef.current) {
+      // Create particles manually
+      const createParticle = (x: number, y: number, z: number) => {
+        const geometry = new THREE.SphereGeometry(0.08, 8, 8);
+        const material = new THREE.MeshBasicMaterial({
+          color: new THREE.Color(
+            0.5 + x / 8,
+            0.5 + y / 8,
+            0.8
+          ),
+          transparent: true,
+          opacity: 0.8,
+        });
+        
+        const particle = new THREE.Mesh(geometry, material);
+        particle.position.set(x, y, z);
+        return particle;
+      };
+      
+      // Create 100 particles in a sphere formation
+      for (let i = 0; i < 100; i++) {
         const radius = Math.random() * 4;
         const theta = Math.random() * Math.PI * 2;
         const phi = Math.acos(2 * Math.random() - 1);
-
-        positions[i3] = radius * Math.sin(phi) * Math.cos(theta);
-        positions[i3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
-        positions[i3 + 2] = radius * Math.cos(phi);
-
-        // Assign colors based on position
-        colors[i3] = 0.5 + positions[i3] / 8;
-        colors[i3 + 1] = 0.5 + positions[i3 + 1] / 8;
-        colors[i3 + 2] = 0.8;
-
-        // Random sizes
-        sizes[i] = Math.random() * 0.1 + 0.05;
+        
+        const x = radius * Math.sin(phi) * Math.cos(theta);
+        const y = radius * Math.sin(phi) * Math.sin(theta);
+        const z = radius * Math.cos(phi);
+        
+        const particle = createParticle(x, y, z);
+        groupRef.current.add(particle);
       }
-
-      geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-      geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-      geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
-
-      // Apply the geometry
-      pointsRef.current.geometry = geometry;
     }
   }, []);
-
+  
   useFrame((state, delta) => {
-    if (pointsRef.current) {
-      pointsRef.current.rotation.x += delta * 0.05;
-      pointsRef.current.rotation.y += delta * 0.07;
+    if (groupRef.current) {
+      groupRef.current.rotation.x += delta * 0.05;
+      groupRef.current.rotation.y += delta * 0.07;
     }
   });
-
-  return (
-    <points ref={pointsRef}>
-      <pointsMaterial
-        size={0.15}
-        vertexColors
-        transparent
-        opacity={0.8}
-        sizeAttenuation={true}
-      />
-    </points>
-  );
+  
+  return <group ref={groupRef} />;
 };
 
 const SkillsCanvas = () => {
