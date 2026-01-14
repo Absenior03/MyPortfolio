@@ -49,7 +49,7 @@ const Loader = () => {
           transition={{ delay: 1, duration: 1 }}
           className={`${styles.heroSubText} mt-2 text-center`}
         >
-          Software Engineer & Full Stack Developer
+          Software Engineer
         </motion.p>
         <div className="w-64 h-2 bg-gray-700 mt-8 rounded-full overflow-hidden">
           <motion.div 
