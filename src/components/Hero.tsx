@@ -80,7 +80,7 @@ const Hero = () => {
             <span className="text-white">Hi, I'm</span> <span className="text-[#915EFF]">Anirban</span>
           </h1>
           <p className={`${styles.heroSubText} mt-4 text-white-100 opacity-80`}>
-            Full Stack Developer & MCA Student
+            Software Engineer
             <br className="sm:block hidden" />
             <span className="mt-5 block text-sm md:text-base leading-relaxed text-[#aaa6c3]">
               Crafting scalable web solutions with creative precision.
