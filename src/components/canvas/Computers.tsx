@@ -55,6 +55,7 @@ const Computers = ({ isMobile }: { isMobile: boolean }) => {
 
 const ComputersCanvas = () => {
   const [isMobile, setIsMobile] = useState(false);
+  const [isInteracting, setIsInteracting] = useState(false);
 
   useEffect(() => {
     // Add a listener for changes to the screen size
@@ -79,20 +80,28 @@ const ComputersCanvas = () => {
 
   return (
     <Canvas
-      frameloop="demand"
+      frameloop="always"
       shadows
       dpr={[1, 2]}
       camera={{ position: [20, 3, 5], fov: 25 }}
       gl={{ preserveDrawingBuffer: true }}
-      className="w-full h-full"
+      className="w-full h-full cursor-grab active:cursor-grabbing"
     >
       <Suspense fallback={null}>
         <OrbitControls
+          enablePan={false}
           enableZoom={false}
-          maxPolarAngle={Math.PI / 2}
-          minPolarAngle={Math.PI / 2}
-          autoRotate
+          enableDamping
+          dampingFactor={0.08}
+          rotateSpeed={0.7}
+          minAzimuthAngle={-Math.PI / 6}
+          maxAzimuthAngle={Math.PI / 6}
+          maxPolarAngle={Math.PI / 1.95}
+          minPolarAngle={Math.PI / 2.4}
+          autoRotate={!isInteracting}
           autoRotateSpeed={0.5}
+          onStart={() => setIsInteracting(true)}
+          onEnd={() => setIsInteracting(false)}
         />
         <Computers isMobile={isMobile} />
       </Suspense>

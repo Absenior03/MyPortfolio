@@ -69,13 +69,13 @@ const Hero = () => {
       </div>
 
       <div
-        className={`${styles.paddingX} absolute inset-0 top-[150px] max-w-7xl mx-auto flex flex-row items-start gap-8 z-10`}
+        className={`${styles.paddingX} pointer-events-none absolute inset-0 top-[150px] max-w-7xl mx-auto flex flex-row items-start gap-8 z-10`}
       >
         <div className="flex flex-col justify-center items-center mt-5">
           <div className="w-1 sm:h-80 h-40 bg-gradient-to-b from-[#915EFF] to-transparent" />
         </div>
 
-        <div className="z-10 max-w-2xl fade-in">
+        <div className="pointer-events-auto z-10 max-w-2xl fade-in">
           <h1 className={`${styles.heroHeadText}`}>
             <span className="text-white">Hi, I'm</span> <span className="text-[#915EFF]">Anirban</span>
           </h1>
@@ -106,7 +106,7 @@ const Hero = () => {
         </div>
       </div>
 
-      <div className="absolute w-full h-[45%] bottom-0 md:h-[65%] lg:h-[75%]">
+      <div className="absolute bottom-0 w-full h-[45%] md:h-[65%] lg:h-[75%]">
         {show3D && (
           <ErrorBoundary onError={handleError} fallback={<div className="h-full flex items-center justify-center text-white-100">3D visualization not available</div>}>
             <ComputersCanvasWithNoSSR />
