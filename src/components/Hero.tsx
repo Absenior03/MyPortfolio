@@ -1,101 +1,192 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import { styles } from "../styles";
-import { gsap } from "../utils/gsap";
+import { gsap, ScrollTrigger } from "../utils/gsap";
 
-// Dynamically import ComputersCanvas with no SSR
+// ─── Dynamic import (no SSR) ──────────────────────────────────────────────────
+
 const ComputersCanvasWithNoSSR = dynamic(
   () => import("./canvas/Computers").then((mod) => ({ default: mod.default })),
-  { ssr: false, loading: () => <div className="h-full flex items-center justify-center">Loading 3D Model...</div> }
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-full items-center justify-center text-xs uppercase tracking-widest text-[#7dd3fc]/60">
+        Initialising scene…
+      </div>
+    ),
+  }
 );
 
-// Animation variants
-const textVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { 
-    opacity: 1, 
-    y: 0,
-    transition: { duration: 0.8, ease: "easeOut" }
-  }
+// ─── Typed text component ─────────────────────────────────────────────────────
+
+const DESIGNATION = "Software Engineer";
+
+/**
+ * Renders the designation letter-by-letter.
+ * `charsVisible` is a float 0→DESIGNATION.length; integer part = chars shown.
+ * Cursor blinks independently via CSS animation.
+ */
+const TypedDesignation = ({ charsVisible }: { charsVisible: number }) => {
+  const count = Math.min(Math.floor(charsVisible), DESIGNATION.length);
+  const done = count >= DESIGNATION.length;
+
+  return (
+    <span className="inline-flex items-baseline">
+      <span className="text-[#c4b5fd]">{DESIGNATION.slice(0, count)}</span>
+      <span
+        className={`ml-[2px] inline-block h-[1em] w-[2px] translate-y-[1px] bg-[#c4b5fd] ${
+          done ? "hero-cursor-blink" : "hero-cursor-solid"
+        }`}
+      />
+    </span>
+  );
 };
 
-const lineVariants = {
-  hidden: { height: 0, opacity: 0 },
-  visible: { 
-    height: "70px", 
-    opacity: 1,
-    transition: { duration: 1, delay: 0.5, ease: "easeOut" }
-  }
-};
+// ─── Hero component ───────────────────────────────────────────────────────────
 
 const Hero = () => {
+  // Shared refs passed into R3F scene
+  const progressRef = useRef(0);      // 0→1 overall scroll progress
+  const keystrokeRef = useRef(0);     // monotonically-increasing keystroke count (float)
+
+  // DOM refs for GSAP
+  const heroRef = useRef<HTMLElement | null>(null);
+  const upperRef = useRef<HTMLDivElement | null>(null);
+  const canvasWrapRef = useRef<HTMLDivElement | null>(null);
+
   const [isMounted, setIsMounted] = useState(false);
   const [show3D, setShow3D] = useState(true);
+  const [charsVisible, setCharsVisible] = useState(0); // drives TypedDesignation
+
+  useEffect(() => { setIsMounted(true); }, []);
 
   useEffect(() => {
-    setIsMounted(true);
+    if (!isMounted || !heroRef.current) return;
 
-    if (isMounted) {
-      // Parallax effect on scroll
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: "#hero",
-          start: "top top",
-          end: "bottom top",
-          scrub: 1,
-        },
+    let trigger: ScrollTrigger | undefined;
+    let resizeHandler: (() => void) | undefined;
+
+    // How many keystrokes to fire per character (keeps animation legible)
+    const TOTAL_CHARS = DESIGNATION.length;
+    // Phase timings as fractions of total scroll progress
+    // Phase 1: 0 → 0.30  typing  (robot types + letters appear)
+    // Phase 2: 0.30 → 0.70 orbit (camera sweeps 180°, scene shrinks, copy scales up)
+    // Phase 3: 0.70 → 1.00 hold
+    const P1_END = 0.30;
+    const P2_START = 0.30;
+    const P2_END = 0.70;
+
+    const ease = gsap.parseEase("power2.inOut");
+
+    const applyFrame = (rawProg: number) => {
+      progressRef.current = rawProg;
+
+      // ── Typing phase (0 → P1_END) ─────────────────────────────────────────
+      const typingFrac = Math.min(rawProg / P1_END, 1);
+      const chars = typingFrac * TOTAL_CHARS;
+      // keystrokeRef advances one tick per character (two hands alternating)
+      keystrokeRef.current = chars;
+      setCharsVisible(chars);
+
+      // ── Copy scale (phase 2) ───────────────────────────────────────────────
+      if (upperRef.current) {
+        const p2 = ease(
+          THREE_clamp((rawProg - P2_START) / (P2_END - P2_START), 0, 1)
+        );
+        gsap.set(upperRef.current, {
+          scale: 1 + p2 * 0.08,          // grow gently as scene shrinks
+          opacity: 0.6 + p2 * 0.4,
+        });
+      }
+
+      // ── Canvas opacity fade in phase 2 ────────────────────────────────────
+      if (canvasWrapRef.current) {
+        const p2 = ease(
+          THREE_clamp((rawProg - P2_START) / (P2_END - P2_START), 0, 1)
+        );
+        gsap.set(canvasWrapRef.current, {
+          opacity: 1 - p2 * 0.55,
+        });
+      }
+    };
+
+    const context = gsap.context(() => {
+      applyFrame(0);
+
+      trigger = ScrollTrigger.create({
+        trigger: heroRef.current,
+        start: "top top",
+        end: "+=200%",
+        scrub: 0.5,
+        invalidateOnRefresh: true,
+        onUpdate: (self) => applyFrame(self.progress),
       });
 
-      tl.to(".hero-text", {
-        y: 100,
-        opacity: 0,
-      });
-    }
+      resizeHandler = () => { if (trigger) applyFrame(trigger.progress); };
+      window.addEventListener("resize", resizeHandler);
+    }, heroRef);
+
+    return () => {
+      resizeHandler && window.removeEventListener("resize", resizeHandler);
+      trigger?.kill();
+      context.revert();
+    };
   }, [isMounted]);
 
-  // Error handler for 3D component
   const handleError = () => {
     console.error("Failed to load 3D component");
     setShow3D(false);
   };
 
   return (
-    <section id="hero" className="relative w-full h-screen mx-auto overflow-hidden">
-      {/* Minimal background with subtle gradient */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute top-[-10%] left-[20%] w-[30vw] h-[30vw] rounded-full bg-[#2a1363] opacity-5 blur-[100px] animate-pulse" style={{ animationDuration: '15s' }} />
-        <div className="absolute bottom-[-5%] right-[10%] w-[25vw] h-[25vw] rounded-full bg-[#2a1363] opacity-5 blur-[100px] animate-pulse" style={{ animationDuration: '20s' }} />
-      </div>
+    <section
+      id="hero"
+      ref={heroRef}
+      className="hero-scroll-stage relative mx-auto min-h-[300vh] w-full"
+    >
+      {/* ── Sticky viewport ─────────────────────────────────────────────── */}
+      <div className="sticky top-0 flex h-screen flex-col overflow-hidden bg-[#040816]">
 
-      <div
-        className={`${styles.paddingX} pointer-events-none absolute inset-0 top-[150px] max-w-7xl mx-auto flex flex-row items-start gap-8 z-10`}
-      >
-        <div className="flex flex-col justify-center items-center mt-5">
-          <div className="w-1 sm:h-80 h-40 bg-gradient-to-b from-[#915EFF] to-transparent" />
-        </div>
+        {/* Background layers */}
+        <div className="hero-grid pointer-events-none absolute inset-0 z-0 opacity-50" />
+        <div className="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(120,119,198,0.18),transparent)]" />
+        <div className="pointer-events-none absolute left-[-6%] top-[5%] z-0 h-96 w-96 rounded-full bg-[#7c3aed]/8 blur-[110px]" />
+        <div className="pointer-events-none absolute bottom-[-6%] right-[-4%] z-0 h-80 w-80 rounded-full bg-[#2563eb]/10 blur-[110px]" />
 
-        <div className="pointer-events-auto z-10 max-w-2xl fade-in">
-          <h1 className={`${styles.heroHeadText}`}>
-            <span className="text-white">Hi, I'm</span> <span className="text-[#915EFF]">Anirban</span>
-          </h1>
-          <p className={`${styles.heroSubText} mt-4 text-white-100 opacity-80`}>
-            Software Engineer
-            <br className="sm:block hidden" />
-            <span className="mt-5 block text-sm md:text-base leading-relaxed text-[#aaa6c3]">
-              Crafting scalable web solutions with creative precision.
+        {/* ── UPPER HALF: name + typed designation ──────────────────────── */}
+        <div
+          ref={upperRef}
+          className="hero-upper relative z-10 flex flex-col items-center justify-center pt-28 pb-4 text-center"
+          style={{ flex: "0 0 44%", transformOrigin: "center 80%" }}
+        >
+          {/* Pre-name label */}
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#7dd3fc]/25 bg-[#07101f]/70 px-4 py-1.5 text-[10px] font-semibold uppercase tracking-[0.3em] text-[#7dd3fc]/80">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#7dd3fc]" />
+            Portfolio · 2026
+          </div>
+
+          <h1 className={`${styles.heroHeadText} mb-0`}>
+            <span className="text-white/90">Hi, I&apos;m </span>
+            <span className="bg-gradient-to-r from-[#a78bfa] via-[#c4b5fd] to-[#7dd3fc] bg-clip-text text-transparent">
+              Anirban
             </span>
+          </h1>
+
+          {/* Typed designation – synced to keystrokeRef */}
+          <p className={`${styles.heroSubText} mt-3 flex items-baseline justify-center gap-0`}>
+            <TypedDesignation charsVisible={charsVisible} />
           </p>
 
-          {/* CTA buttons with simplified styling */}
-          <div className="mt-10 flex flex-wrap gap-5">
-            <a href="#contact" className="button-primary">
-              Let's Connect
+          {/* CTA row */}
+          <div className="mt-8 flex flex-wrap justify-center gap-4">
+            <a href="#contact" className="button-primary text-sm">
+              Let&apos;s Connect
             </a>
-            <a 
-              href="/assets/Anirban_Banerjee_Resume.pdf" 
+            <a
+              href="/assets/Anirban_Banerjee_Resume.pdf"
               download
-              className="border border-[#915EFF] py-[0.6rem] px-6 rounded-md text-sm text-white transition-all duration-300 inline-flex items-center gap-2 hover:bg-[#915EFF]/10"
+              className="inline-flex items-center gap-2 rounded-md border border-[#a78bfa]/50 px-5 py-2 text-sm text-white/90 transition-all duration-300 hover:bg-[#a78bfa]/10"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -104,60 +195,69 @@ const Hero = () => {
             </a>
           </div>
         </div>
-      </div>
 
-      <div className="absolute bottom-0 w-full h-[45%] md:h-[65%] lg:h-[75%]">
-        {show3D && (
-          <ErrorBoundary onError={handleError} fallback={<div className="h-full flex items-center justify-center text-white-100">3D visualization not available</div>}>
-            <ComputersCanvasWithNoSSR />
-          </ErrorBoundary>
-        )}
-      </div>
+        {/* ── LOWER HALF: 3D robot + typewriter scene ───────────────────── */}
+        <div
+          ref={canvasWrapRef}
+          className="hero-canvas-lower relative z-10 overflow-hidden"
+          style={{ flex: "1 1 56%" }}
+        >
+          {/* Top feather so canvas bleeds into upper section smoothly */}
+          <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-20 bg-gradient-to-b from-[#040816] to-transparent" />
+          {/* Bottom feather */}
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-10 bg-gradient-to-t from-[#040816] to-transparent" />
 
-      <div className="absolute xs:bottom-10 bottom-32 w-full flex justify-center items-center">
-        <a href="#about">
-          <div className="w-[35px] h-[64px] rounded-full border border-[#aaa6c3] flex justify-center items-start p-2 hover:border-[#915EFF] transition-colors duration-300">
-            <motion.div
-              animate={{
-                y: [0, 24, 0],
-              }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-                repeatType: "loop",
-              }}
-              className="w-3 h-3 rounded-full bg-white mb-1"
-            />
-          </div>
-        </a>
+          {show3D && (
+            <ErrorBoundary onError={handleError} fallback={
+              <div className="flex h-full items-center justify-center text-white/40">
+                3D scene unavailable
+              </div>
+            }>
+              <ComputersCanvasWithNoSSR
+                progressRef={progressRef}
+                keystrokeRef={keystrokeRef}
+              />
+            </ErrorBoundary>
+          )}
+        </div>
+
+        {/* ── Scroll hint ────────────────────────────────────────────────── */}
+        <div className="absolute bottom-6 left-1/2 z-20 flex -translate-x-1/2 flex-col items-center gap-2">
+          <span className="text-[10px] uppercase tracking-[0.25em] text-white/30">scroll</span>
+          <a href="#about">
+            <div className="flex h-14 w-8 items-start justify-center rounded-full border border-white/20 p-2 hover:border-[#a78bfa]/60 transition-colors">
+              <motion.div
+                animate={{ y: [0, 20, 0] }}
+                transition={{ duration: 1.6, repeat: Infinity, repeatType: "loop" }}
+                className="h-2.5 w-2.5 rounded-full bg-white/70"
+              />
+            </div>
+          </a>
+        </div>
       </div>
     </section>
   );
 };
 
-// Simple error boundary component
+// ─── Tiny inline clamp helper (avoids importing THREE in Hero) ────────────────
+const THREE_clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
+
+// ─── Error boundary ───────────────────────────────────────────────────────────
+
 class ErrorBoundary extends React.Component<{
   children: React.ReactNode;
   fallback: React.ReactNode;
   onError?: () => void;
 }> {
   state = { hasError: false };
-
-  static getDerivedStateFromError() {
-    return { hasError: true };
-  }
-
-  componentDidCatch(error: any) {
+  static getDerivedStateFromError() { return { hasError: true }; }
+  componentDidCatch(error: Error) {
     console.error("3D Component Error:", error);
-    if (this.props.onError) this.props.onError();
+    this.props.onError?.();
   }
-
   render() {
-    if (this.state.hasError) {
-      return this.props.fallback;
-    }
-    return this.props.children;
+    return this.state.hasError ? this.props.fallback : this.props.children;
   }
 }
 
-export default Hero; 
+export default Hero;
