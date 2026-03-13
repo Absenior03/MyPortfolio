@@ -1,19 +1,30 @@
-import Head from 'next/head';
-import dynamic from 'next/dynamic';
-import React from 'react';
-import Navbar from '../components/Navbar';
-import Hero from '../components/Hero';
-import About from '../components/About';
-import Experience from '../components/Experience';
-import Projects from '../components/Projects';
-import Skills from '../components/Skills';
-import Testimonials from '../components/Testimonials';
-import Contact from '../components/Contact';
+import Head from "next/head";
+import dynamic from "next/dynamic";
+import React from "react";
+import Navbar from "../components/Navbar";
+import Hero from "../components/Hero";
+import About from "../components/About";
+import Experience from "../components/Experience";
+import Projects from "../components/Projects";
+import Skills from "../components/Skills";
+import Testimonials from "../components/Testimonials";
+import Contact from "../components/Contact";
 
 // Dynamically import 3D components with no SSR and error boundary
 const StarsCanvasWithNoSSR = dynamic(
-  () => import('../components/canvas/Stars').then((mod) => ({ default: mod.default })),
-  { ssr: false }
+  () =>
+    import("../components/canvas/Stars").then((mod) => ({
+      default: mod.default,
+    })),
+  { ssr: false },
+);
+
+const SectionsAmbientWithNoSSR = dynamic(
+  () =>
+    import("../components/canvas/SectionsAmbient").then((mod) => ({
+      default: mod.default,
+    })),
+  { ssr: false },
 );
 
 export default function Home() {
@@ -30,17 +41,27 @@ export default function Home() {
           <Navbar />
           <Hero />
         </div>
-        <About />
-        <Experience />
-        <Projects />
-        <Skills />
-        <Testimonials />
+
         <div className="relative z-0">
-          <Contact />
-          {/* Wrap in error boundary */}
-          <ErrorBoundary fallback={<div>Could not load 3D effects</div>}>
-            <StarsCanvasWithNoSSR />
+          <ErrorBoundary fallback={null}>
+            <SectionsAmbientWithNoSSR />
           </ErrorBoundary>
+
+          <div className="relative z-10">
+            <About />
+            <Experience />
+            <Projects />
+            <Skills />
+            <Testimonials />
+
+            <div className="relative z-0">
+              <Contact />
+
+              <ErrorBoundary fallback={<div>Could not load 3D effects</div>}>
+                <StarsCanvasWithNoSSR />
+              </ErrorBoundary>
+            </div>
+          </div>
         </div>
       </main>
     </>
@@ -48,22 +69,25 @@ export default function Home() {
 }
 
 // Simple Error Boundary Component
-class ErrorBoundary extends React.Component<{fallback: React.ReactNode, children: React.ReactNode}> {
+class ErrorBoundary extends React.Component<{
+  fallback: React.ReactNode;
+  children: React.ReactNode;
+}> {
   state = { hasError: false };
-  
+
   static getDerivedStateFromError() {
     return { hasError: true };
   }
-  
+
   componentDidCatch(error: any, errorInfo: any) {
     console.error("Canvas Error:", error, errorInfo);
   }
-  
+
   render() {
     if (this.state.hasError) {
       return this.props.fallback;
     }
-    
+
     return this.props.children;
   }
-} 
+}

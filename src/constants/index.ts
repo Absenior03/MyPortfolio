@@ -256,7 +256,7 @@ const testimonials = [
   {
     testimonial:
       "Anirban's analytical thinking and problem-solving skills are exceptional. His ability to break down complex technical challenges is remarkable.",
-    name: "Dr. Sunitha M",
+    name: "Dr. Binayak",
     designation: "Associate Professor",
     company: "Christ University",
     image: "professor1.jpg",
@@ -264,33 +264,177 @@ const testimonials = [
   {
     testimonial:
       "I've collaborated with Anirban on several projects. His coding standards and architectural decisions always ensure scalable and maintainable solutions.",
-    name: "Rahul Sharma",
-    designation: "Senior Developer",
-    company: "Tech Innovations",
+    name: "Somya Abichandani",
+    designation: "Engineering Manager",
+    company: "Corestrat",
     image: "colleague1.jpg",
   },
   {
     testimonial:
       "What sets Anirban apart is his dedication to performance optimization. He consistently delivers efficient code that runs seamlessly even under heavy loads.",
-    name: "Priya Desai",
-    designation: "Project Manager",
-    company: "CodeCraft Solutions",
+    name: "Gaurav Kumar",
+    designation: "Business Analyst",
+    company: "Cloudbyz",
     image: "colleague2.jpg",
   },
 ];
 
 const skillCategories = [
   {
-    title: "Languages",
-    skills: ["JavaScript", "TypeScript", "Java", "Python", "C", "C++", "Go", "Kotlin"]
+    title: "Programming Languages - Primary",
+    skills: ["C++", "Java", "Python", "JavaScript (ES6+)", "TypeScript"],
   },
   {
-    title: "Frameworks/Libraries",
-    skills: ["React", "Next.js", "Express", "Tailwind", "Flask", "Django", "Spring Boot", "Redux"]
+    title: "Programming Languages - Mobile",
+    skills: ["Dart (Flutter SDK)"],
   },
   {
-    title: "Tools & Technologies",
-    skills: ["Docker", "Kubernetes", "Firebase", "Git", "MySQL", "MongoDB", "AWS", "Redis", "GraphQL"]
+    title: "Programming Languages - Systems & Scripting",
+    skills: ["Go (Golang)", "C", "Bash/Shell"],
+  },
+  {
+    title: "Programming Languages - Data",
+    skills: ["SQL (PostgreSQL, MySQL)"],
+  },
+  {
+    title: "Frontend & Mobile Development - Frameworks",
+    skills: ["React 18", "Angular (17/18)", "Node.js", "Express.js"],
+  },
+  {
+    title: "Frontend & Mobile Development - State Management",
+    skills: ["Redux Toolkit (RTK Query)", "NgRx", "RxJS"],
+  },
+  {
+    title: "Frontend & Mobile Development - UI & Visualization",
+    skills: [
+      "MUI 5 (Material UI)",
+      "Tailwind CSS",
+      "D3.js",
+      "Chart.js",
+      "ReactFlow",
+      "Vite",
+      "Webpack",
+    ],
+  },
+  {
+    title: "Frontend & Mobile Development - Mobile",
+    skills: ["Flutter (Android/iOS cross-platform development)"],
+  },
+  {
+    title: "Backend & Cloud Infrastructure - Cloud Platforms",
+    skills: [
+      "Amazon Web Services (AWS)",
+      "Google Cloud Platform (GCP)",
+      "Microsoft Azure (Portal & DevOps)",
+    ],
+  },
+  {
+    title: "Backend & Cloud Infrastructure - API Development",
+    skills: ["FastAPI", "Flask", "Django", "RESTful APIs", "gRPC", "GraphQL"],
+  },
+  {
+    title: "Backend & Cloud Infrastructure - Serverless",
+    skills: ["AWS Lambda", "Google Cloud Run", "Cloud Functions"],
+  },
+  {
+    title: "Backend & Cloud Infrastructure - Distributed Systems",
+    skills: [
+      "Microservices Architecture",
+      "Event-Driven Design",
+      "L7 Load Balancing",
+      "VPC Peering",
+    ],
+  },
+  {
+    title: "Data Engineering & Databases - Big Data",
+    skills: ["Apache Spark", "Apache Kafka", "ETL Pipelines"],
+  },
+  {
+    title: "Data Engineering & Databases - Caching & Real-time",
+    skills: ["Redis", "WebSockets (Socket.IO, WebRTC)"],
+  },
+  {
+    title: "Data Engineering & Databases - Storage",
+    skills: [
+      "Google BigQuery",
+      "Firestore",
+      "Firebase",
+      "Star Schema Modeling",
+      "Columnar Databases",
+    ],
+  },
+  {
+    title: "DevOps & Observability - Containerization",
+    skills: ["Docker", "Kubernetes (K8s)", "Helm"],
+  },
+  {
+    title: "DevOps & Observability - Infrastructure as Code (IaC)",
+    skills: ["Terraform"],
+  },
+  {
+    title: "DevOps & Observability - CI/CD",
+    skills: ["Azure DevOps", "GitHub Actions", "Jenkins"],
+  },
+  {
+    title: "DevOps & Observability - Monitoring",
+    skills: [
+      "Prometheus",
+      "Grafana",
+      "CloudWatch",
+      "Google Cloud Monitoring",
+    ],
+  },
+  {
+    title: "DevOps & Observability - Logging",
+    skills: [
+      "Relentless Auditing & Metric Monitoring",
+      "Telemetry",
+      "Log Analysis (Splunk)",
+    ],
+  },
+  {
+    title: "Security & Compliance - Identity",
+    skills: ["OAuth 2.0", "OpenID Connect (OIDC)", "JWT", "Firebase Auth"],
+  },
+  {
+    title: "Security & Compliance - Networking",
+    skills: ["TLS/SSL Encryption", "DNS", "Firewalls"],
+  },
+  {
+    title: "Security & Compliance - Standards",
+    skills: [
+      "FinTech Regulatory Compliance (KYC/AML)",
+      "Zero-Trust Security",
+      "IAM Policy Management",
+      "WCAG 2.1 Accessibility",
+    ],
+  },
+  {
+    title: "Core Competencies - Computer Science",
+    skills: [
+      "Data Structures & Algorithms (DSA)",
+      "System Design",
+      "Object-Oriented Design (OOD)",
+      "Functional Programming",
+    ],
+  },
+  {
+    title: "Core Competencies - Domain Expertise",
+    skills: [
+      "Localization (i18n)",
+      "Multi-currency Logic",
+      "FinTech Automation",
+      "ATE (Automated Test Equipment)",
+    ],
+  },
+  {
+    title: "Core Competencies - Methodologies",
+    skills: [
+      "Agile/Scrum",
+      "TDD (Test Driven Development)",
+      "Root Cause Analysis (RCA)",
+      "SDLC Documentation",
+    ],
   },
 ];
 
