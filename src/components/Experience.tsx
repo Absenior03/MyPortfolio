@@ -1,7 +1,7 @@
 import { styles } from "../styles";
 import { experiences } from "../constants";
 import SectionWrapper from "./SectionWrapper";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -14,11 +14,30 @@ const Experience = () => {
   const glowRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const nodeRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [isMobile, setIsMobile] = useState(false);
 
   const STEP_Y = 320;
   const TOP_OFFSET = 190;
 
   useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const media = window.matchMedia("(max-width: 1023px)");
+    const update = () => setIsMobile(media.matches);
+
+    update();
+    media.addEventListener("change", update);
+
+    return () => media.removeEventListener("change", update);
+  }, []);
+
+  useEffect(() => {
+    if (isMobile) {
+      return;
+    }
+
     if (
       !sectionRef.current ||
       !stageRef.current ||
@@ -169,15 +188,54 @@ const Experience = () => {
     });
 
     return () => ctx.revert();
-  }, [STEP_Y]);
+  }, [STEP_Y, isMobile]);
 
   const corridorHeight = TOP_OFFSET + STEP_Y * (experiences.length - 1) + 620;
 
   return (
     <div id="experience-section" ref={sectionRef}>
+      <div className="mb-6 md:hidden">
+        <p className={styles.sectionSubText}>What I've done so far</p>
+        <h2 className={styles.sectionHeadText}>Experience & Leadership.</h2>
+      </div>
+
+      {isMobile && (
+        <div className="grid gap-5 md:hidden">
+          {experiences.map((experience, index) => (
+            <article
+              key={`${experience.title}-${index}`}
+              className="rounded-2xl border border-cyan-300/25 bg-[rgba(16,22,46,0.82)] p-5 shadow-[0_12px_30px_rgba(0,0,0,0.3)]"
+            >
+              <div className="mb-3 inline-flex items-center rounded-full border border-cyan-300/35 bg-cyan-200/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-cyan-200">
+                {experience.date}
+              </div>
+
+              <h3 className="text-white text-[20px] font-bold leading-tight">
+                {experience.title}
+              </h3>
+              <p className="mt-1 text-cyan-100/80 text-[14px] font-semibold">
+                {experience.company_name}
+              </p>
+
+              <ul className="mt-4 space-y-2">
+                {experience.points.map((point, pointIndex) => (
+                  <li
+                    key={`experience-mobile-point-${index}-${pointIndex}`}
+                    className="flex text-[13px] leading-relaxed text-slate-100/90"
+                  >
+                    <span className="mr-2 text-cyan-300">●</span>
+                    <span>{point}</span>
+                  </li>
+                ))}
+              </ul>
+            </article>
+          ))}
+        </div>
+      )}
+
       <div
         ref={stageRef}
-        className="mt-16 h-[82vh] min-h-[640px] relative overflow-hidden rounded-3xl border border-cyan-400/20 bg-[rgba(7,11,26,0.72)] backdrop-blur-xl"
+        className={`mt-8 md:mt-16 h-[78svh] min-h-[520px] md:h-[82vh] md:min-h-[640px] relative overflow-hidden rounded-3xl border border-cyan-400/20 bg-[rgba(7,11,26,0.72)] backdrop-blur-xl ${isMobile ? "hidden md:block" : ""}`}
       >
         {/* Keep title visible while the stage is pinned */}
         <div className="pointer-events-none absolute left-4 top-4 z-30 md:left-8 md:top-6">

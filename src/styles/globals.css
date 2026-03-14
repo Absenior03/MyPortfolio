@@ -77,19 +77,8 @@ p {
 }
 
 section {
-  margin-bottom: 3rem; 
+  margin-bottom: 0;
   position: relative;
-}
-
-section:after {
-  content: "";
-  position: absolute;
-  bottom: -1.5rem;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--border), transparent);
 }
 
 .hero-scroll-stage:after {

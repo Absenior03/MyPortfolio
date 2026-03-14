@@ -3,7 +3,14 @@ import { motion } from "framer-motion";
 import { styles } from "../styles";
 import SectionWrapper from "./SectionWrapper";
 import { slideIn } from "../utils/motion";
-import { FiGithub, FiLinkedin, FiMail, FiMapPin, FiPhone, FiDownload } from "react-icons/fi";
+import {
+  FiGithub,
+  FiLinkedin,
+  FiMail,
+  FiMapPin,
+  FiPhone,
+  FiDownload,
+} from "react-icons/fi";
 import gsap from "gsap";
 import IconWrapper from "./IconWrapper";
 
@@ -36,10 +43,12 @@ const Contact = () => {
     });
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
-    
+
     // Clear error when user types
     if (errors[name as keyof typeof errors]) {
       setErrors({ ...errors, [name]: "" });
@@ -93,27 +102,40 @@ const Contact = () => {
   };
 
   return (
-    <div id="contact-section" className="xl:mt-8 xl:flex-row flex-col-reverse flex gap-10 overflow-hidden">
-      <div
-        className="flex-[0.75] bg-[rgba(21,19,40,0.7)] p-8 rounded-lg border border-[rgba(145,94,255,0.2)]"
-      >
+    <div
+      id="contact-section"
+      className="mt-2 md:mt-6 xl:mt-8 flex flex-col-reverse xl:flex-row gap-6 md:gap-8 xl:gap-10 overflow-hidden"
+    >
+      <div className="flex-[0.75] bg-[rgba(21,19,40,0.7)] p-5 sm:p-6 md:p-8 rounded-lg border border-[rgba(145,94,255,0.2)]">
         <p className="sectionSubText">Get in touch</p>
         <h3 className="sectionHeadText">Contact.</h3>
 
         {formSubmitted ? (
-          <div
-            className="mt-10 flex flex-col bg-[rgba(26,23,41,0.8)] p-6 rounded-lg border border-green-500/20"
-          >
+          <div className="mt-10 flex flex-col bg-[rgba(26,23,41,0.8)] p-6 rounded-lg border border-green-500/20">
             <div className="mb-4 flex items-center justify-center">
               <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
               </div>
             </div>
-            <h4 className="text-white font-bold text-lg mb-2 text-center">Thank you!</h4>
+            <h4 className="text-white font-bold text-lg mb-2 text-center">
+              Thank you!
+            </h4>
             <p className="text-[#aaa6c3] text-center">
-              Your message has been sent successfully. I'll get back to you as soon as possible.
+              Your message has been sent successfully. I'll get back to you as
+              soon as possible.
             </p>
           </div>
         ) : (
@@ -148,7 +170,9 @@ const Contact = () => {
                 className={`${errors.email ? "border-red-500" : ""}`}
               />
               {errors.email && (
-                <span className="text-red-500 mt-1 text-sm">{errors.email}</span>
+                <span className="text-red-500 mt-1 text-sm">
+                  {errors.email}
+                </span>
               )}
             </label>
 
@@ -163,7 +187,9 @@ const Contact = () => {
                 className={`resize-none ${errors.message ? "border-red-500" : ""}`}
               />
               {errors.message && (
-                <span className="text-red-500 mt-1 text-sm">{errors.message}</span>
+                <span className="text-red-500 mt-1 text-sm">
+                  {errors.message}
+                </span>
               )}
             </label>
 
@@ -178,14 +204,12 @@ const Contact = () => {
         )}
       </div>
 
-      <div
-        className="xl:flex-1 xl:h-auto md:h-[550px] h-[350px]"
-      >
+      <div className="xl:flex-1 h-auto">
         <div className="h-full flex flex-col justify-center">
-          <h3 className="sectionHeadText mb-6 text-center xl:text-left">
+          <h3 className="sectionHeadText mb-5 md:mb-6 text-center xl:text-left">
             Contact Info
           </h3>
-          
+
           <div className="grid gap-5">
             <div className="contact-info-card flex items-center gap-5">
               <div className="contact-icon-container">
@@ -193,10 +217,10 @@ const Contact = () => {
               </div>
               <div>
                 <h4 className="contact-title">Email</h4>
-                <p className="contact-text">anirbanbanerjee1087@gmail.com</p>
+                <p className="contact-text">anirbanbanerjee050@gmail.com</p>
               </div>
             </div>
-            
+
             <div className="contact-info-card flex items-center gap-5">
               <div className="contact-icon-container">
                 <FiPhone className="text-white text-xl" />
@@ -206,7 +230,7 @@ const Contact = () => {
                 <p className="contact-text">+91-7908940076</p>
               </div>
             </div>
-            
+
             <div className="contact-info-card flex items-center gap-5">
               <div className="contact-icon-container">
                 <FiMapPin className="text-white text-xl" />
@@ -216,9 +240,9 @@ const Contact = () => {
                 <p className="contact-text">Bengaluru, India</p>
               </div>
             </div>
-            
-            <div className="contact-info-card flex items-center justify-between gap-5 mt-2">
-              <div className="flex items-center gap-5">
+
+            <div className="contact-info-card flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-5 mt-2">
+              <div className="flex items-center gap-4 sm:gap-5">
                 <div className="contact-icon-container">
                   <FiDownload className="text-white text-xl" />
                 </div>
@@ -227,16 +251,16 @@ const Contact = () => {
                   <p className="contact-text">Download my CV</p>
                 </div>
               </div>
-              <a 
-                href="/assets/Anirban_Banerjee_Resume.pdf" 
+              <a
+                href="/assets/Anirban_Banerjee_Resume.pdf"
                 download
-                className="button-primary py-2 px-4 text-sm"
+                className="button-primary py-2 px-4 text-sm self-start sm:self-auto"
               >
                 Download
               </a>
             </div>
-            
-            <div className="flex items-center justify-center gap-6 mt-6">
+
+            <div className="flex items-center justify-center xl:justify-start gap-5 md:gap-6 mt-5 md:mt-6">
               <a
                 href="https://github.com/Absenior03"
                 target="_blank"
@@ -246,7 +270,7 @@ const Contact = () => {
               >
                 <FiGithub className="text-white text-xl" />
               </a>
-              
+
               <a
                 href="https://www.linkedin.com/in/anirban-banerjee-b8a75b1a9/"
                 target="_blank"
@@ -256,9 +280,9 @@ const Contact = () => {
               >
                 <FiLinkedin className="text-white text-xl" />
               </a>
-              
+
               <a
-                href={`mailto:anirbanbanerjee1087@gmail.com`}
+                href={`mailto:anirbanbanerjee050@gmail.com`}
                 className="contact-icon-container hover:scale-110 transition-transform"
                 aria-label="Email"
               >
@@ -272,4 +296,4 @@ const Contact = () => {
   );
 };
 
-export default SectionWrapper(Contact, "contact"); 
+export default SectionWrapper(Contact, "contact");
