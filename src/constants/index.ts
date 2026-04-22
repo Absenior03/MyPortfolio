@@ -250,13 +250,101 @@ const projects = [
     source_code_link: "https://github.com/Absenior03/process-scheduler-simulator",
     live_demo_link: "https://example.com/",
   },
+  {
+    name: "WanderQuest",
+    description:
+      "Travel discovery and planning platform with curated destinations, itinerary-focused UX, and a modern responsive frontend experience.",
+    tags: [
+      {
+        name: "vue",
+        color: "blue-text-gradient",
+      },
+      {
+        name: "typescript",
+        color: "green-text-gradient",
+      },
+      {
+        name: "vercel",
+        color: "pink-text-gradient",
+      },
+    ],
+    image: "/images/annapurna.png",
+    source_code_link: "https://github.com/Absenior03/WanderQuest",
+    live_demo_link: "https://wander-quest-inky.vercel.app",
+  },
+  {
+    name: "FoodOrder",
+    description:
+      "Full-stack food delivery application with product browsing, ordering workflow, and deployment-ready frontend and backend integration.",
+    tags: [
+      {
+        name: "typescript",
+        color: "blue-text-gradient",
+      },
+      {
+        name: "react",
+        color: "green-text-gradient",
+      },
+      {
+        name: "full-stack",
+        color: "pink-text-gradient",
+      },
+    ],
+    image: "/images/foodorder.png",
+    source_code_link: "https://github.com/Absenior03/FoodOrder",
+    live_demo_link: "https://food-order-frontend-1.vercel.app",
+  },
+  {
+    name: "Insight",
+    description:
+      "Real-time log analytics platform that ingests and visualizes streaming logs from a simulator service for observability-style insights.",
+    tags: [
+      {
+        name: "python",
+        color: "blue-text-gradient",
+      },
+      {
+        name: "analytics",
+        color: "green-text-gradient",
+      },
+      {
+        name: "firebase",
+        color: "pink-text-gradient",
+      },
+    ],
+    image: "/images/insights.png",
+    source_code_link: "https://github.com/Absenior03/Insight",
+    live_demo_link: "https://insights-467407.web.app",
+  },
+  {
+    name: "CodeSync",
+    description:
+      "Collaborative real-time code editor where users join shared rooms and write code together with synchronized updates.",
+    tags: [
+      {
+        name: "javascript",
+        color: "blue-text-gradient",
+      },
+      {
+        name: "socket.io",
+        color: "green-text-gradient",
+      },
+      {
+        name: "collaboration",
+        color: "pink-text-gradient",
+      },
+    ],
+    image: "/images/codesync.png",
+    source_code_link: "https://github.com/Absenior03/CodeSync",
+    live_demo_link: "https://codesyncing.netlify.app/",
+  },
 ];
 
 const testimonials = [
   {
     testimonial:
       "Anirban's analytical thinking and problem-solving skills are exceptional. His ability to break down complex technical challenges is remarkable.",
-    name: "Dr. Binayak",
+    name: "Dr. Binayak Dutta",
     designation: "Associate Professor",
     company: "Christ University",
     image: "professor1.jpg",
@@ -272,7 +360,7 @@ const testimonials = [
   {
     testimonial:
       "What sets Anirban apart is his dedication to performance optimization. He consistently delivers efficient code that runs seamlessly even under heavy loads.",
-    name: "Gaurav Kumar",
+    name: "Gaurav Santosh",
     designation: "Business Analyst",
     company: "Cloudbyz",
     image: "colleague2.jpg",

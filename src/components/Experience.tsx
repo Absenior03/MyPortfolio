@@ -1,7 +1,7 @@
 import { styles } from "../styles";
 import { experiences } from "../constants";
 import SectionWrapper from "./SectionWrapper";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -14,7 +14,6 @@ const Experience = () => {
   const glowRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const nodeRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const [isMobile, setIsMobile] = useState(false);
 
   const STEP_Y = 320;
   const TOP_OFFSET = 190;
@@ -24,17 +23,8 @@ const Experience = () => {
       return;
     }
 
-    const media = window.matchMedia("(max-width: 1023px)");
-    const update = () => setIsMobile(media.matches);
-
-    update();
-    media.addEventListener("change", update);
-
-    return () => media.removeEventListener("change", update);
-  }, []);
-
-  useEffect(() => {
-    if (isMobile) {
+    const isDesktop = window.matchMedia("(min-width: 768px)").matches;
+    if (!isDesktop) {
       return;
     }
 
@@ -188,7 +178,7 @@ const Experience = () => {
     });
 
     return () => ctx.revert();
-  }, [STEP_Y, isMobile]);
+  }, [STEP_Y]);
 
   const corridorHeight = TOP_OFFSET + STEP_Y * (experiences.length - 1) + 620;
 
@@ -199,43 +189,44 @@ const Experience = () => {
         <h2 className={styles.sectionHeadText}>Experience & Leadership.</h2>
       </div>
 
-      {isMobile && (
-        <div className="grid gap-5 md:hidden">
-          {experiences.map((experience, index) => (
-            <article
-              key={`${experience.title}-${index}`}
-              className="rounded-2xl border border-cyan-300/25 bg-[rgba(16,22,46,0.82)] p-5 shadow-[0_12px_30px_rgba(0,0,0,0.3)]"
-            >
-              <div className="mb-3 inline-flex items-center rounded-full border border-cyan-300/35 bg-cyan-200/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-cyan-200">
-                {experience.date}
-              </div>
+      <div className="relative pl-7 grid gap-5 md:hidden">
+        <div className="pointer-events-none absolute left-2.5 top-4 bottom-4 w-[2px] rounded-full bg-gradient-to-b from-cyan-300/80 via-cyan-300/35 to-cyan-300/10" />
+        {experiences.map((experience, index) => (
+          <article
+            key={`${experience.title}-${index}`}
+            className="relative rounded-2xl border border-cyan-300/25 bg-[rgba(16,22,46,0.82)] p-5 shadow-[0_12px_30px_rgba(0,0,0,0.3)]"
+          >
+            <span className="pointer-events-none absolute -left-[22px] top-7 h-3.5 w-3.5 rounded-full border border-cyan-200/80 bg-cyan-300/75 shadow-[0_0_14px_rgba(103,232,249,0.5)]" />
 
-              <h3 className="text-white text-[20px] font-bold leading-tight">
-                {experience.title}
-              </h3>
-              <p className="mt-1 text-cyan-100/80 text-[14px] font-semibold">
-                {experience.company_name}
-              </p>
+            <div className="mb-3 inline-flex items-center rounded-full border border-cyan-300/35 bg-cyan-200/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-cyan-200">
+              {experience.date}
+            </div>
 
-              <ul className="mt-4 space-y-2">
-                {experience.points.map((point, pointIndex) => (
-                  <li
-                    key={`experience-mobile-point-${index}-${pointIndex}`}
-                    className="flex text-[13px] leading-relaxed text-slate-100/90"
-                  >
-                    <span className="mr-2 text-cyan-300">●</span>
-                    <span>{point}</span>
-                  </li>
-                ))}
-              </ul>
-            </article>
-          ))}
-        </div>
-      )}
+            <h3 className="text-white text-[20px] font-bold leading-tight">
+              {experience.title}
+            </h3>
+            <p className="mt-1 text-cyan-100/80 text-[14px] font-semibold">
+              {experience.company_name}
+            </p>
+
+            <ul className="mt-4 space-y-2">
+              {experience.points.map((point, pointIndex) => (
+                <li
+                  key={`experience-mobile-point-${index}-${pointIndex}`}
+                  className="flex text-[13px] leading-relaxed text-slate-100/90"
+                >
+                  <span className="mr-2 text-cyan-300">●</span>
+                  <span>{point}</span>
+                </li>
+              ))}
+            </ul>
+          </article>
+        ))}
+      </div>
 
       <div
         ref={stageRef}
-        className={`mt-8 md:mt-16 h-[78svh] min-h-[520px] md:h-[82vh] md:min-h-[640px] relative overflow-hidden rounded-3xl border border-cyan-400/20 bg-[rgba(7,11,26,0.72)] backdrop-blur-xl ${isMobile ? "hidden md:block" : ""}`}
+        className="hidden md:block mt-16 h-[82vh] min-h-[640px] relative overflow-hidden rounded-3xl border border-cyan-400/20 bg-[rgba(7,11,26,0.72)] backdrop-blur-xl"
       >
         {/* Keep title visible while the stage is pinned */}
         <div className="pointer-events-none absolute left-4 top-4 z-30 md:left-8 md:top-6">

@@ -6,7 +6,7 @@ import { skillCategories } from "../constants";
 import { fadeIn, textVariant } from "../utils/motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, ThreeEvent, useFrame } from "@react-three/fiber";
 import { Billboard, Preload, Text } from "@react-three/drei";
 import * as THREE from "three";
 
@@ -66,7 +66,7 @@ const skillBubbles: SkillBubbleData[] = skillCategories
 const arrangedBubbles: SkillBubbleData[] = skillBubbles.map(
   (bubble, index, array) => {
     const total = array.length;
-    const maxRadius = 5.2;
+    const maxRadius = 8.6;
     const goldenAngle = Math.PI * (3 - Math.sqrt(5));
     const radial = Math.sqrt((index + 0.45) / total) * maxRadius;
     const theta = index * goldenAngle + ((index % 6) - 2.5) * 0.015;
@@ -92,7 +92,13 @@ const skillGroups = Array.from(
   new Set(arrangedBubbles.map((bubble) => bubble.group)),
 );
 
-const BubbleNode = ({ bubble }: { bubble: SkillBubbleData }) => {
+const BubbleNode = ({
+  bubble,
+  cloudOffsetRef,
+}: {
+  bubble: SkillBubbleData;
+  cloudOffsetRef: React.MutableRefObject<THREE.Vector2>;
+}) => {
   const groupRef = useRef<THREE.Group>(null);
   const shellRef = useRef<THREE.Mesh>(null);
   const haloRef = useRef<THREE.Mesh>(null);
@@ -119,8 +125,12 @@ const BubbleNode = ({ bubble }: { bubble: SkillBubbleData }) => {
       state.camera,
       new THREE.Vector3(0, 0, 0),
     );
-    const pointerX = state.pointer.x * (viewport.width * 0.5) * 0.92;
-    const pointerY = state.pointer.y * (viewport.height * 0.5) * 0.72;
+    const pointerX =
+      state.pointer.x * (viewport.width * 0.5) * 0.92 -
+      cloudOffsetRef.current.x;
+    const pointerY =
+      state.pointer.y * (viewport.height * 0.5) * 0.72 -
+      cloudOffsetRef.current.y;
     const deltaX = baseX - pointerX;
     const deltaY = baseY - pointerY;
     const distance = Math.hypot(deltaX, deltaY) || 0.0001;
@@ -212,6 +222,62 @@ const BubbleNode = ({ bubble }: { bubble: SkillBubbleData }) => {
 
 const SkillsCloud = () => {
   const cloudRef = useRef<THREE.Group>(null);
+  const cloudOffsetRef = useRef(new THREE.Vector2(0, 0));
+  const panCurrentRef = useRef(new THREE.Vector2(0, 0));
+  const panTargetRef = useRef(new THREE.Vector2(0, 0));
+  const dragRef = useRef({ active: false, x: 0, y: 0 });
+
+  const PAN_LIMIT_X = 4.2;
+  const PAN_LIMIT_Y = 2.8;
+
+  const onDragStart = (e: ThreeEvent<PointerEvent>) => {
+    dragRef.current.active = true;
+    dragRef.current.x = e.nativeEvent.clientX;
+    dragRef.current.y = e.nativeEvent.clientY;
+    e.stopPropagation();
+    const target = e.target as Element & {
+      setPointerCapture?: (pointerId: number) => void;
+    };
+    if (target.setPointerCapture) {
+      target.setPointerCapture(e.pointerId);
+    }
+  };
+
+  const onDragMove = (e: ThreeEvent<PointerEvent>) => {
+    if (!dragRef.current.active) {
+      return;
+    }
+
+    const dx = e.nativeEvent.clientX - dragRef.current.x;
+    const dy = e.nativeEvent.clientY - dragRef.current.y;
+
+    dragRef.current.x = e.nativeEvent.clientX;
+    dragRef.current.y = e.nativeEvent.clientY;
+
+    panTargetRef.current.x = THREE.MathUtils.clamp(
+      panTargetRef.current.x + dx * 0.018,
+      -PAN_LIMIT_X,
+      PAN_LIMIT_X,
+    );
+    panTargetRef.current.y = THREE.MathUtils.clamp(
+      panTargetRef.current.y - dy * 0.018,
+      -PAN_LIMIT_Y,
+      PAN_LIMIT_Y,
+    );
+
+    e.stopPropagation();
+  };
+
+  const onDragEnd = (e: ThreeEvent<PointerEvent>) => {
+    dragRef.current.active = false;
+    e.stopPropagation();
+    const target = e.target as Element & {
+      releasePointerCapture?: (pointerId: number) => void;
+    };
+    if (target.releasePointerCapture) {
+      target.releasePointerCapture(e.pointerId);
+    }
+  };
 
   useFrame((state, delta) => {
     if (!cloudRef.current) {
@@ -219,20 +285,53 @@ const SkillsCloud = () => {
     }
 
     const t = state.clock.elapsedTime;
-    cloudRef.current.position.x = Math.sin(t * 0.12) * 0.16;
-    cloudRef.current.position.y = Math.cos(t * 0.1) * 0.1;
+    panCurrentRef.current.lerp(panTargetRef.current, 1 - Math.exp(-delta * 8));
+
+    const driftX = Math.sin(t * 0.12) * 0.16;
+    const driftY = Math.cos(t * 0.1) * 0.1;
+
+    cloudOffsetRef.current.set(
+      panCurrentRef.current.x + driftX,
+      panCurrentRef.current.y + driftY,
+    );
+
+    cloudRef.current.position.x = cloudOffsetRef.current.x;
+    cloudRef.current.position.y = cloudOffsetRef.current.y;
     cloudRef.current.rotation.set(0, 0, 0);
   });
 
   return (
     <group ref={cloudRef}>
-      <mesh position={[0, 0, -0.78]}>
-        <planeGeometry args={[16, 10.5]} />
+      <mesh
+        position={[0, 0, -0.78]}
+        onPointerDown={onDragStart}
+        onPointerMove={onDragMove}
+        onPointerUp={onDragEnd}
+        onPointerOut={onDragEnd}
+        onPointerLeave={onDragEnd}
+      >
+        <planeGeometry args={[24, 16]} />
         <meshBasicMaterial color="#0b1c35" transparent opacity={0.23} />
       </mesh>
 
+      <mesh
+        position={[0, 0, 0.8]}
+        onPointerDown={onDragStart}
+        onPointerMove={onDragMove}
+        onPointerUp={onDragEnd}
+        onPointerOut={onDragEnd}
+        onPointerLeave={onDragEnd}
+      >
+        <planeGeometry args={[24, 16]} />
+        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+      </mesh>
+
       {arrangedBubbles.map((bubble) => (
-        <BubbleNode key={bubble.name} bubble={bubble} />
+        <BubbleNode
+          key={bubble.name}
+          bubble={bubble}
+          cloudOffsetRef={cloudOffsetRef}
+        />
       ))}
     </group>
   );
@@ -247,7 +346,7 @@ const SkillsCanvas = () => {
       </div>
 
       <div className="absolute left-4 top-4 z-10 rounded-full border border-cyan-300/20 bg-[rgba(3,8,24,0.58)] px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.24em] text-cyan-100/75 backdrop-blur-md md:left-6 md:top-6">
-        Hover to repel the bubbles
+        Drag to pan · Hover to repel
       </div>
 
       <div className="h-[540px] w-full md:h-[620px]">
