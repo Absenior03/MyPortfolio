@@ -36,6 +36,7 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [toggle, setToggle] = useState(false);
 
+  // Scroll detection for both navbar background and active section
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.scrollY;
@@ -43,6 +44,32 @@ const Navbar = () => {
         setScrolled(true);
       } else {
         setScrolled(false);
+      }
+
+      // Update active section based on scroll position
+      const sections = navLinks.map((link) => {
+        const element = document.getElementById(link.id);
+        return { id: link.id, title: link.title, element };
+      });
+
+      // Find which section is currently in view
+      const navOffset = 120;
+      let matched = false;
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const section = sections[i];
+        if (section.element) {
+          const rect = section.element.getBoundingClientRect();
+          // Check if section is in viewport (with some offset for navbar height)
+          if (rect.top <= navOffset && rect.bottom > navOffset) {
+            setActive(section.title);
+            matched = true;
+            break;
+          }
+        }
+      }
+
+      if (!matched && scrollTop < navOffset) {
+        setActive("");
       }
     };
 
@@ -67,7 +94,7 @@ const Navbar = () => {
       variants={navVariants}
       initial="hidden"
       animate="visible"
-      className={`w-full flex items-center py-4 md:py-5 px-3 sm:px-6 md:px-10 lg:px-16 fixed top-0 left-0 right-0 z-30 overflow-x-clip relative ${
+      className={`w-full flex items-center py-3 md:py-3 px-3 sm:px-6 md:px-10 lg:px-16 relative z-30 overflow-x-clip ${
         scrolled ? "bg-primary/80 backdrop-blur-md shadow-sm" : "bg-transparent"
       }`}
       style={{
@@ -76,7 +103,7 @@ const Navbar = () => {
         paddingTop: "max(env(safe-area-inset-top), 0px)",
       }}
     >
-      <div className="w-full min-w-0 flex justify-between items-center max-w-7xl mx-auto gap-2 pr-11 md:pr-0">
+      <div className="w-full min-w-0 flex justify-between items-center max-w-7xl mx-auto gap-2">
         <Link
           href="/"
           className="flex min-w-0 max-w-[calc(100%-3.5rem)] items-center gap-2"
@@ -165,7 +192,11 @@ const Navbar = () => {
             }}
             className={`${
               !toggle ? "hidden" : "flex"
-            } p-4 bg-black/70 backdrop-blur-lg absolute top-[calc(64px+env(safe-area-inset-top))] left-0 right-0 mx-4 my-2 z-20 rounded-xl border border-gray-800/30`}
+            } p-4 bg-black/70 backdrop-blur-lg absolute top-[calc(64px+env(safe-area-inset-top))] right-0 mx-2 my-2 z-20 rounded-xl border border-gray-800/30`}
+            style={{
+              maxWidth: "calc(100% - 1rem)",
+              right: "max(env(safe-area-inset-right), 0.5rem)",
+            }}
           >
             <ul className="list-none flex justify-start items-start flex-1 flex-col gap-1">
               {navLinks.map((nav, index) => (

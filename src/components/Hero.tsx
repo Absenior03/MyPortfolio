@@ -147,7 +147,7 @@ const Hero = () => {
     <section
       id="hero"
       ref={heroRef}
-      className="hero-scroll-stage relative mx-auto min-h-[240vh] md:min-h-[300vh] w-full"
+      className="hero-scroll-stage relative mx-auto -mt-12 md:-mt-14 min-h-[240vh] md:min-h-[300vh] w-full"
     >
       {/* ── Sticky viewport ─────────────────────────────────────────────── */}
       <div className="sticky top-0 flex h-[100svh] flex-col overflow-hidden bg-[#040816]">
@@ -160,7 +160,7 @@ const Hero = () => {
         {/* ── UPPER HALF: name + typed designation ──────────────────────── */}
         <div
           ref={upperRef}
-          className="hero-upper relative z-10 flex flex-col items-center justify-center px-4 pt-20 pb-4 text-center md:px-0 md:pt-28"
+          className="hero-upper relative z-10 flex flex-col items-center justify-center px-4 pt-8 pb-4 text-center md:px-0 md:pt-10"
           style={{ flex: "0 0 44%", transformOrigin: "center 80%" }}
         >
           {/* Pre-name label */}
