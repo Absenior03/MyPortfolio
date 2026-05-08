@@ -100,7 +100,7 @@ const Navbar = () => {
       style={{
         paddingLeft: "max(env(safe-area-inset-left), 1rem)",
         paddingRight: "max(env(safe-area-inset-right), 1rem)",
-        paddingTop: "max(env(safe-area-inset-top), 0px)",
+        paddingTop: "calc(max(env(safe-area-inset-top), 0px) + 12px)",
       }}
     >
       <div className="w-full min-w-0 flex justify-between items-center max-w-7xl mx-auto gap-2">
